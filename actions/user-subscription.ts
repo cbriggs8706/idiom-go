@@ -37,7 +37,7 @@ export const createStripeUrl = async () => {
 				price_data: {
 					currency: 'USD',
 					product_data: {
-						name: 'Genie Greenie',
+						name: 'Idiom Go',
 						description: 'Unlimited Hearts',
 					},
 					unit_amount: 2000, // $20.00 USD

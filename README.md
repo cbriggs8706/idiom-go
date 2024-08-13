@@ -1,2 +1,1 @@
-# genie-greenie
-# genie-greenie
+# idiom-go
