@@ -198,7 +198,7 @@ export const Quiz = ({
 
 	const title =
 		challenge.type === 'ASSIST'
-			? 'Select the correct meaning'
+			? 'Select the correct answer'
 			: challenge.question
 
 	return (
