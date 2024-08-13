@@ -4,9 +4,8 @@ import { toast } from 'sonner'
 import Image from 'next/image'
 import Confetti from 'react-confetti'
 import { useRouter } from 'next/navigation'
-import { useState, useTransition, useEffect, useRef } from 'react'
+import { useState, useTransition } from 'react'
 import { useAudio, useWindowSize, useMount } from 'react-use'
-import ReactPlayer from 'react-player/youtube'
 
 import { reduceHearts } from '@/actions/user-progress'
 import { useHeartsModal } from '@/store/use-hearts-modal'
@@ -60,7 +59,6 @@ export const Quiz = ({
 	const [incorrectAudio, _i, incorrectControls] = useAudio({
 		src: '/incorrect.wav',
 	})
-
 	const [pending, startTransition] = useTransition()
 
 	const [lessonId] = useState(initialLessonId)
@@ -75,11 +73,12 @@ export const Quiz = ({
 		)
 		return uncompletedIndex === -1 ? 0 : uncompletedIndex
 	})
-	const challenge = challenges[activeIndex]
-	const options = challenge?.challengeOptions ?? []
 
 	const [selectedOption, setSelectedOption] = useState<number>()
 	const [status, setStatus] = useState<'correct' | 'wrong' | 'none'>('none')
+
+	const challenge = challenges[activeIndex]
+	const options = challenge?.challengeOptions ?? []
 
 	const onNext = () => {
 		setActiveIndex((current) => current + 1)
@@ -197,20 +196,10 @@ export const Quiz = ({
 		)
 	}
 
-	let title
-	if (challenge.type === 'ASSIST') {
-		title = 'Select to correct meaning'
-	} else if (challenge.type === 'SELECT') {
-		title = challenge.question
-	} else if (challenge.type === 'HEAR') {
-		title = 'Listen to this video'
-	}
-
-	// PRIOR CODE
-	// const title =
-	// 	challenge.type === 'ASSIST'
-	// 		? 'Select the correct meaning'
-	// 		: challenge.question
+	const title =
+		challenge.type === 'ASSIST'
+			? 'Select the correct meaning'
+			: challenge.question
 
 	return (
 		<>
@@ -231,52 +220,6 @@ export const Quiz = ({
 							{challenge.type === 'ASSIST' && (
 								<QuestionBubble question={challenge.question} />
 							)}
-							{challenge.type === 'HEAR' && challenge.video && (
-								<>
-									<div className="player-wrapper">
-										<ReactPlayer
-											url={`https://www.youtube.com/watch?v=${challenge.video}`}
-											controls={true}
-											width="100%"
-											height="300px"
-											className="react-player"
-											onEnded={() =>
-												startTransition(() => {
-													upsertChallengeProgress(challenge.id)
-														.then(() => {
-															correctControls.play()
-															setSelectedOption(1)
-															setStatus('correct')
-															setPercentage(
-																(prev) => prev + 100 / challenges.length
-															)
-
-															// This is a practice
-															if (initialPercentage === 100) {
-																setHearts((prev) => Math.min(prev + 1, 5))
-															}
-														})
-														.catch(() =>
-															toast.error(
-																'Something went wrong. Please try again.'
-															)
-														)
-												})
-											}
-										/>
-									</div>
-
-									<p>
-										&bull; Must watch the video all the way through to mark as
-										complete.
-									</p>
-									<p>
-										&bull; To change the speed, click on the settings cog in the
-										bottom right hand corner of the video.
-									</p>
-								</>
-							)}
-
 							<Challenge
 								options={options}
 								onSelect={onSelect}

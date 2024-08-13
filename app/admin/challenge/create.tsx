@@ -24,16 +24,11 @@ export const ChallengeCreate = () => {
 							id: 'ASSIST',
 							name: 'ASSIST',
 						},
-						{
-							id: 'HEAR',
-							name: 'HEAR',
-						},
 					]}
 					validate={[required()]}
 				/>
 				<ReferenceInput source="lessonId" reference="lessons" />
 				<NumberInput source="order" validate={[required()]} label="Order" />
-				<TextInput source="video" label="Video Url" />
 			</SimpleForm>
 		</Create>
 	)
