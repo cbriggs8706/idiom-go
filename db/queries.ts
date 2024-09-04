@@ -1,5 +1,5 @@
 import { cache } from 'react'
-import { eq } from 'drizzle-orm'
+import { arrayContains, eq } from 'drizzle-orm'
 import { auth } from '@clerk/nextjs'
 
 import db from '@/db/drizzle'
@@ -259,6 +259,14 @@ export const getTopTenUsers = cache(async () => {
 			userImageSrc: true,
 			points: true,
 		},
+	})
+
+	return data
+})
+
+export const getVocabByLesson = cache(async (lessonNumbers: number[]) => {
+	const data = await db.query.vocab.findMany({
+		where: arrayContains(vocab.lessons, lessonNumbers),
 	})
 
 	return data

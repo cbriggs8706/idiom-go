@@ -142,3 +142,26 @@ export const userSubscription = pgTable('user_subscription', {
 	stripePriceId: text('stripe_price_id').notNull(),
 	stripeCurrentPeriodEnd: timestamp('stripe_current_period_end').notNull(),
 })
+
+export const vocab = pgTable('vocab', {
+	id: serial('id').primaryKey(),
+	phonemicAudioSrc: text('phonemic_audio_src'),
+	slowAudioSrc: text('slow_audio_src'),
+	fastAudioSrc: text('fast_audio_src'),
+	images: text('images').array(),
+	hebrew: text('hebrew'),
+	hebrewWNiqqud: text('hebrew_w_niqqud'),
+	partOfSpeech: text('part_of_speech'),
+	ipa: text('ipa'),
+	transliteration: text('transliteration'),
+	frontMouth: text('front_mouth'),
+	anatomy: text('anatomy'),
+	gematria: text('gematria'),
+	paleo: text('paleo'),
+	proto: text('proto'),
+	cursive: text('cursive'),
+	contextClips: text('context_clips').array(),
+	contextSentences: text('context_sentences').array(),
+	lessons: integer('lesson').array(),
+	bibleHub: text('bible_hub'),
+})
