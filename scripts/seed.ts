@@ -44,12 +44,12 @@ const main = async () => {
 			},
 			{
 				id: 5,
-				title: 'Beginner Hebrew Alphabet',
+				title: 'Intro Hebrew Alphabet',
 				imageSrc: '/is.svg',
 			},
 			{
 				id: 6,
-				title: 'Beginner Hebrew Alphabet',
+				title: 'Beginner Hebrew',
 				imageSrc: '/is.svg',
 			},
 		])
@@ -60,6 +60,13 @@ const main = async () => {
 				courseId: 2, // Intermediate Spanish
 				title: 'Semana 1',
 				description: 'Sustantivos, Artículos y Adjetivos',
+				order: 1,
+			},
+			{
+				id: 2,
+				courseId: 6, // Beginner Hebrew
+				title: 'Awb Lesson 1',
+				description: 'Aleph with Beth Lesson 1',
 				order: 1,
 			},
 		])
@@ -100,6 +107,12 @@ const main = async () => {
 				unitId: 1, // Semana 1 (Sustantivos, Artículos y Adjetivos...)
 				order: 6,
 				title: 'Forma plural de adjetivos',
+			},
+			{
+				id: 7,
+				unitId: 2, // AwB Lesson 1
+				order: 1,
+				title: 'First Words',
 			},
 		])
 
@@ -208,8 +221,47 @@ const main = async () => {
 			{ id: 72, lessonId: 1, type: 'ASSIST', order: 72, question: 'pianista' },
 			{ id: 73, lessonId: 1, type: 'ASSIST', order: 73, question: 'amistad' },
 			{ id: 74, lessonId: 1, type: 'ASSIST', order: 74, question: 'blusa' },
+			{
+				id: 75,
+				lessonId: 7,
+				type: 'HEAR',
+				order: 1,
+				question: 'AwB Lesson 1 Video',
+				video: 'https://youtu.be/y640-FIpxQs?si=hB3rDhgaloR4plIj',
+			},
+			{ id: 76, lessonId: 7, type: 'ASSIST', order: 2, question: 'eesh' },
 		])
 
+		await db.insert(schema.challengeOptions).values([
+			{
+				challengeId: 76,
+				correct: true,
+				text: 'eesh',
+				imageSrc: '/eesh.jpeg',
+				audioSrc: '/eesh.mp3',
+			},
+			{
+				challengeId: 76,
+				correct: false,
+				text: 'eeshah',
+				imageSrc: '/eeshah.jpeg',
+				audioSrc: '/eeshah.mp3',
+			},
+			{
+				challengeId: 76,
+				correct: false,
+				text: 'ayez',
+				imageSrc: '/ayez.jpeg',
+				audioSrc: '/ayez.mp3',
+			},
+			{
+				challengeId: 76,
+				correct: false,
+				text: 'chamor',
+				imageSrc: '/chamor.jpeg',
+				audioSrc: '/chamor.mp3',
+			},
+		])
 		await db.insert(schema.challengeOptions).values([
 			{ challengeId: 2, correct: true, text: 'el problema' },
 			{ challengeId: 2, correct: false, text: 'la problema' },
