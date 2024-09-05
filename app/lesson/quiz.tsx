@@ -6,6 +6,7 @@ import Confetti from 'react-confetti'
 import { useRouter } from 'next/navigation'
 import { useState, useTransition } from 'react'
 import { useAudio, useWindowSize, useMount } from 'react-use'
+import ReactPlayer from 'react-player/youtube'
 
 import { reduceHearts } from '@/actions/user-progress'
 import { useHeartsModal } from '@/store/use-hearts-modal'
@@ -196,10 +197,20 @@ export const Quiz = ({
 		)
 	}
 
-	const title =
-		challenge.type === 'ASSIST'
-			? 'Select the correct answer'
-			: challenge.question
+	let title
+	if (challenge.type === 'ASSIST') {
+		title = 'Select to correct meaning'
+	} else if (challenge.type === 'SELECT') {
+		title = challenge.question
+	} else if (challenge.type === 'HEAR') {
+		title = 'Listen to this video'
+	}
+
+	// PRIOR CODE
+	// const title =
+	// 	challenge.type === 'ASSIST'
+	// 		? 'Select the correct answer'
+	// 		: challenge.question
 
 	return (
 		<>
@@ -219,6 +230,51 @@ export const Quiz = ({
 						<div>
 							{challenge.type === 'ASSIST' && (
 								<QuestionBubble question={challenge.question} />
+							)}
+							{challenge.type === 'HEAR' && challenge.video && (
+								<>
+									<div className="player-wrapper">
+										<ReactPlayer
+											url={`https://www.youtube.com/watch?v=${challenge.video}`}
+											controls={true}
+											width="100%"
+											height="300px"
+											className="react-player"
+											onEnded={() =>
+												startTransition(() => {
+													upsertChallengeProgress(challenge.id)
+														.then(() => {
+															correctControls.play()
+															setSelectedOption(1)
+															setStatus('correct')
+															setPercentage(
+																(prev) => prev + 100 / challenges.length
+															)
+
+															// This is a practice
+															if (initialPercentage === 100) {
+																setHearts((prev) => Math.min(prev + 1, 5))
+															}
+														})
+														.catch(() =>
+															toast.error(
+																'Something went wrong. Please try again.'
+															)
+														)
+												})
+											}
+										/>
+									</div>
+
+									<p>
+										&bull; Must watch the video all the way through to mark as
+										complete.
+									</p>
+									<p>
+										&bull; To change the speed, click on the settings cog in the
+										bottom right hand corner of the video.
+									</p>
+								</>
 							)}
 							<Challenge
 								options={options}
