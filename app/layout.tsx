@@ -11,7 +11,7 @@ import './globals.css'
 const font = Nunito({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-	title: 'IdiomGo',
+	title: 'Idiom Go',
 	description: 'Language Learn Made Fun With Comprehensible Input',
 }
 
