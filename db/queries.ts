@@ -10,6 +10,7 @@ import {
 	units,
 	userProgress,
 	userSubscription,
+	vocab,
 } from '@/db/schema'
 
 export const getUserProgress = cache(async () => {

@@ -23,6 +23,10 @@ import { ChallengeOptionList } from './challengeOption/list'
 import { ChallengeOptionEdit } from './challengeOption/edit'
 import { ChallengeOptionCreate } from './challengeOption/create'
 
+import { VocabList } from './vocab/list'
+import { VocabEdit } from './vocab/edit'
+import { VocabCreate } from './vocab/create'
+
 const dataProvider = simpleRestProvider('/api')
 
 const App = () => {
@@ -49,6 +53,7 @@ const App = () => {
 				edit={LessonEdit}
 				recordRepresentation="title"
 			/>
+
 			<Resource
 				name="challenges"
 				list={ChallengeList}
@@ -63,6 +68,13 @@ const App = () => {
 				edit={ChallengeOptionEdit}
 				recordRepresentation="text"
 				options={{ label: 'Challenge Options' }}
+			/>
+			<Resource
+				name="vocab"
+				list={VocabList}
+				create={VocabCreate}
+				edit={VocabEdit}
+				recordRepresentation="title"
 			/>
 		</Admin>
 	)
