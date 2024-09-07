@@ -22,13 +22,31 @@ export const Sidebar = ({ className }: Props) => {
 			<Link href="/learn">
 				<div className="pt-8 pl-4 pb-7 flex items-center gap-x-3">
 					<Image src="/mascot.svg" height={40} width={40} alt="Mascot" />
-					<h1 className="text-2xl font-extrabold text-green-600 tracking-wide">
+					<h1 className="text-2xl font-extrabold text-sky-500 tracking-wide">
 						Idiom Go
 					</h1>
 				</div>
 			</Link>
 			<div className="flex flex-col gap-y-2 flex-1">
-				<SidebarItem label="Learn" href="/learn" iconSrc="/learn.svg" />
+				<SidebarItem label="Learn" href="/learn" iconSrc="/youtube.svg" />
+				<SidebarItem
+					label="Speak"
+					href="/speak"
+					iconSrc="/speaking-head-in-silhouette.svg"
+				/>
+				<SidebarItem label="Play" href="/play" iconSrc="/video-game.svg" />
+				<SidebarItem
+					label="Memorize"
+					href="/memorize"
+					iconSrc="/card-file-box.svg"
+				/>
+				<SidebarItem label="Read" href="/read" iconSrc="/open-book.svg" />
+				<SidebarItem label="Print" href="/print" iconSrc="/printer.svg" />
+				<SidebarItem
+					label="Calendar"
+					href="/calendar"
+					iconSrc="/spiral-calendar-pad.svg"
+				/>
 				{/* <SidebarItem
 					label="Leaderboard"
 					href="/leaderboard"
