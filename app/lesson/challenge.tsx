@@ -24,7 +24,7 @@ export const Challenge = ({
 		<div className={cn('flex flex-row-reverse gap-2 flex-wrap')}>
 			{options.map((option, i) => {
 				return (
-					<div className="grow w-1/3 md:w-1/4">
+					<div key={option.id} className="grow w-1/3 md:w-1/4">
 						<Card
 							key={option.id}
 							id={option.id}
