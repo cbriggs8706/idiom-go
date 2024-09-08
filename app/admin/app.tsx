@@ -22,6 +22,12 @@ import { ChallengeCreate } from './challenge/create'
 import { ChallengeOptionList } from './challengeOption/list'
 import { ChallengeOptionEdit } from './challengeOption/edit'
 import { ChallengeOptionCreate } from './challengeOption/create'
+import { PlayLessonList } from './playLesson/list'
+import { PlayLessonCreate } from './playLesson/create'
+import { PlayLessonEdit } from './playLesson/edit'
+import { GameList } from './game/list'
+import { GameCreate } from './game/create'
+import { GameEdit } from './game/edit'
 
 const dataProvider = simpleRestProvider('/api')
 
@@ -63,6 +69,22 @@ const App = () => {
 				edit={ChallengeOptionEdit}
 				recordRepresentation="text"
 				options={{ label: 'Challenge Options' }}
+			/>
+			<hr />
+			<Resource
+				name="playLessons"
+				list={PlayLessonList}
+				create={PlayLessonCreate}
+				edit={PlayLessonEdit}
+				recordRepresentation="text"
+				options={{ label: 'Play Lesson' }}
+			/>
+			<Resource
+				name="games"
+				list={GameList}
+				create={GameCreate}
+				edit={GameEdit}
+				recordRepresentation="text"
 			/>
 		</Admin>
 	)
