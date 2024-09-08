@@ -223,7 +223,8 @@ export const Quiz = ({
 			/>
 			<div className="flex-1">
 				<div className="h-full flex items-center justify-center">
-					<div className="lg:min-h-[350px] lg:w-[600px] w-full px-6 lg:px-0 flex flex-col gap-y-12">
+					<div className="lg:min-h-[350px] w-5/6 px-6 lg:px-0 flex flex-col gap-y-12">
+						{/* <div className="lg:min-h-[350px] lg:w-[600px] w-full px-6 lg:px-0 flex flex-col gap-y-12"> */}
 						<h1 className="text-lg lg:text-3xl text-center lg:text-start font-bold text-neutral-700">
 							{title}
 						</h1>
@@ -233,12 +234,12 @@ export const Quiz = ({
 							)}
 							{challenge.type === 'HEAR' && challenge.video && (
 								<>
-									<div className="player-wrapper">
+									<div className="player-wrapper w-full mx-auto h-[400px] lg:h-[600px]">
 										<ReactPlayer
 											url={`https://www.youtube.com/watch?v=${challenge.video}`}
 											controls={true}
 											width="100%"
-											height="300px"
+											height="100%"
 											className="react-player"
 											onEnded={() =>
 												startTransition(() => {
