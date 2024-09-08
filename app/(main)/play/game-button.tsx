@@ -1,11 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { Check, Crown, Star } from 'lucide-react'
-import { CircularProgressbarWithChildren } from 'react-circular-progressbar'
-
-import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
 
 import 'react-circular-progressbar/dist/styles.css'
 
@@ -13,19 +8,9 @@ type Props = {
 	id: number
 	index: number
 	totalCount: number
-	locked?: boolean
-	current?: boolean
-	percentage: number
 }
 
-export const LessonButton = ({
-	id,
-	index,
-	totalCount,
-	locked,
-	current,
-	percentage,
-}: Props) => {
+export const GameButton = ({ id, index, totalCount }: Props) => {
 	const cycleLength = 8
 	const cycleIndex = index % cycleLength
 
@@ -45,26 +30,19 @@ export const LessonButton = ({
 
 	const isFirst = index === 0
 	const isLast = index === totalCount
-	const isCompleted = !current && !locked
 
-	const Icon = isCompleted ? Check : isLast ? Crown : Star
-
-	const href = isCompleted ? `/lesson/${id}` : '/lesson'
+	const href = `/game/${id}`
 
 	return (
-		<Link
-			href={href}
-			aria-disabled={locked}
-			style={{ pointerEvents: locked ? 'none' : 'auto' }}
-		>
+		<Link href={href}>
 			<div
 				className="relative"
 				style={{
 					right: `${rightPosition}px`,
-					marginTop: isFirst && !isCompleted ? 60 : 24,
+					marginTop: 24,
 				}}
 			>
-				{current ? (
+				{/* {current ? (
 					<div className="h-[102px] w-[102px] relative">
 						<div className="absolute -top-6 left-2.5 px-3 py-2.5 border-2 font-bold uppercase text-sky-500 bg-white rounded-xl animate-bounce tracking-wide z-10">
 							Start
@@ -114,7 +92,7 @@ export const LessonButton = ({
 							)}
 						/>
 					</Button>
-				)}
+				)} */}
 			</div>
 		</Link>
 	)

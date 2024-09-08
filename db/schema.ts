@@ -143,3 +143,38 @@ export const userSubscription = pgTable('user_subscription', {
 	stripePriceId: text('stripe_price_id').notNull(),
 	stripeCurrentPeriodEnd: timestamp('stripe_current_period_end').notNull(),
 })
+
+export const playLessons = pgTable('play_lessons', {
+	id: serial('id').primaryKey(),
+	title: text('title').notNull(), // Lesson 1
+	description: text('description').notNull(), // Practice the basics of Spanish
+	courseId: integer('course_id')
+		.references(() => courses.id, { onDelete: 'cascade' })
+		.notNull(),
+	order: integer('order').notNull(),
+})
+
+export const playLessonsRelations = relations(playLessons, ({ many, one }) => ({
+	course: one(courses, {
+		fields: [playLessons.courseId],
+		references: [courses.id],
+	}),
+	games: many(games),
+}))
+
+export const games = pgTable('games', {
+	id: serial('id').primaryKey(),
+	title: text('title').notNull(),
+	playLessonId: integer('play_lesson_id')
+		.references(() => playLessons.id, { onDelete: 'cascade' })
+		.notNull(),
+	src: text('src').notNull(),
+	order: integer('order').notNull(),
+})
+
+export const gamesRelations = relations(games, ({ one, many }) => ({
+	playLesson: one(playLessons, {
+		fields: [games.playLessonId],
+		references: [playLessons.id],
+	}),
+}))

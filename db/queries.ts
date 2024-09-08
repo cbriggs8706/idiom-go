@@ -6,7 +6,9 @@ import db from '@/db/drizzle'
 import {
 	challengeProgress,
 	courses,
+	games,
 	lessons,
+	playLessons,
 	units,
 	userProgress,
 	userSubscription,
@@ -78,6 +80,27 @@ export const getUnits = cache(async () => {
 	})
 
 	return normalizedData
+})
+
+export const getPlayLessons = cache(async () => {
+	const { userId } = await auth()
+	const userProgress = await getUserProgress()
+
+	if (!userId || !userProgress?.activeCourseId) {
+		return []
+	}
+
+	const data = await db.query.playLessons.findMany({
+		orderBy: (play_lessons, { asc }) => [asc(play_lessons.order)],
+		where: eq(playLessons.courseId, userProgress.activeCourseId),
+		with: {
+			games: {
+				orderBy: (games, { asc }) => [asc(games.order)],
+			},
+		},
+	})
+
+	return data
 })
 
 export const getCourses = cache(async () => {
@@ -196,6 +219,28 @@ export const getLesson = cache(async (id?: number) => {
 	})
 
 	return { ...data, challenges: normalizedChallenges }
+})
+
+export const getGame = cache(async (id?: number) => {
+	const { userId } = await auth()
+
+	if (!userId) {
+		return null
+	}
+
+	const courseProgress = await getCourseProgress()
+
+	const gameId = id || courseProgress?.activeLessonId
+
+	if (!gameId) {
+		return null
+	}
+
+	const data = await db.query.games.findFirst({
+		where: eq(games.id, gameId),
+	})
+
+	return data
 })
 
 export const getLessonPercentage = cache(async () => {
