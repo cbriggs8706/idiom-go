@@ -16,6 +16,7 @@ import {
 
 import { Unit } from './unit'
 import { Header } from './header'
+import { Calendar } from '@/components/ui/calendar'
 
 const LearnPage = async () => {
 	const userProgressData = getUserProgress()
@@ -60,7 +61,8 @@ const LearnPage = async () => {
 				{/* {!isPro && (
           <Promo />
         )} */}
-				<Quests points={userProgress.points} />
+				<Calendar />
+				{/* <Quests points={userProgress.points} /> */}
 			</StickyWrapper>
 			<FeedWrapper>
 				<Header title={userProgress.activeCourse.title} />

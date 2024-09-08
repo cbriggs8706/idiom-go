@@ -49,7 +49,7 @@ export const Card = ({
 				selected && 'border-sky-300 bg-sky-100 hover:bg-sky-100',
 				selected &&
 					status === 'correct' &&
-					'border-sky-300 bg-sky-100 hover:bg-sky-100',
+					'border-green-300 bg-green-100 hover:bg-green-100',
 				selected &&
 					status === 'wrong' &&
 					'border-rose-300 bg-rose-100 hover:bg-rose-100',
@@ -59,10 +59,21 @@ export const Card = ({
 		>
 			{audio}
 			{imageSrc && (
+				<div className="relative mb-4 h-[80px] lg:h-[150px] w-full">
+					<Image
+						src={imageSrc}
+						alt={text}
+						layout="fill"
+						objectFit="contain"
+						className="w-full h-full"
+					/>
+				</div>
+			)}
+			{/* {imageSrc && (
 				<div className="relative aspect-square mb-4 max-h-[80px] lg:max-h-[150px] w-full">
 					<Image src={imageSrc} fill alt={text} />
 				</div>
-			)}
+			)} */}
 			<div
 				className={cn(
 					'flex items-center justify-between',
@@ -74,7 +85,7 @@ export const Card = ({
 					className={cn(
 						'text-neutral-600 text-sm lg:text-base',
 						selected && 'text-sky-500',
-						selected && status === 'correct' && 'text-sky-500',
+						selected && status === 'correct' && 'text-green-500',
 						selected && status === 'wrong' && 'text-rose-500'
 					)}
 				>
@@ -84,7 +95,9 @@ export const Card = ({
 					className={cn(
 						'lg:w-[30px] lg:h-[30px] w-[20px] h-[20px] border-2 flex items-center justify-center rounded-lg text-neutral-400 lg:text-[15px] text-xs font-semibold',
 						selected && 'border-sky-300 text-sky-500',
-						selected && status === 'correct' && 'border-sky-500 text-sky-500',
+						selected &&
+							status === 'correct' &&
+							'border-green-500 text-green-500',
 						selected && status === 'wrong' && 'border-rose-500 text-rose-500'
 					)}
 				>

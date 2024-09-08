@@ -21,29 +21,26 @@ export const Challenge = ({
 	type,
 }: Props) => {
 	return (
-		<div
-			className={cn(
-				'grid gap-2',
-				type === 'ASSIST' && 'grid-cols-1',
-				type === 'SELECT' &&
-					'grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(0,1fr))]'
-			)}
-		>
-			{options.map((option, i) => (
-				<Card
-					key={option.id}
-					id={option.id}
-					text={option.text}
-					imageSrc={option.imageSrc}
-					shortcut={`${i + 1}`}
-					selected={selectedOption === option.id}
-					onClick={() => onSelect(option.id)}
-					status={status}
-					audioSrc={option.audioSrc}
-					disabled={disabled}
-					type={type}
-				/>
-			))}
+		<div className={cn('flex flex-row-reverse gap-2 flex-wrap')}>
+			{options.map((option, i) => {
+				return (
+					<div className="grow w-1/3 md:w-1/4">
+						<Card
+							key={option.id}
+							id={option.id}
+							text={option.text}
+							imageSrc={option.imageSrc}
+							shortcut={`${i + 1}`}
+							selected={selectedOption === option.id}
+							onClick={() => onSelect(option.id)}
+							status={status}
+							audioSrc={option.audioSrc}
+							disabled={disabled}
+							type={type}
+						/>
+					</div>
+				)
+			})}
 		</div>
 	)
 }

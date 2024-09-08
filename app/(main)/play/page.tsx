@@ -1,7 +1,5 @@
 import { redirect } from 'next/navigation'
 
-// import { Promo } from '@/components/promo'
-import { Quests } from '@/components/quests'
 import { FeedWrapper } from '@/components/feed-wrapper'
 import { UserProgress } from '@/components/user-progress'
 import { StickyWrapper } from '@/components/sticky-wrapper'
@@ -20,6 +18,7 @@ import { UnitBanner } from '../learn/unit-banner'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import Image from 'next/image'
+import { Calendar } from '@/components/ui/calendar'
 
 const PlayPage = async () => {
 	const userProgressData = getUserProgress()
@@ -61,10 +60,7 @@ const PlayPage = async () => {
 					points={userProgress.points}
 					hasActiveSubscription={isPro}
 				/>
-				{/* {!isPro && (
-          <Promo />
-        )} */}
-				<Quests points={userProgress.points} />
+				<Calendar />
 			</StickyWrapper>
 			<FeedWrapper>
 				<Header title={userProgress.activeCourse.title} />
@@ -76,37 +72,215 @@ const PlayPage = async () => {
 				<div className="grid grid-cols-4 gap-4 mt-4">
 					<Link href="/play/6/matching">
 						<div className="flex flex-col items-center">
-							<Image src="/gameIcons/matchingPairs.png" alt="Matching Pairs" />
+							<Image
+								src="/gameIcons/matchingPairs.png"
+								alt="Matching Pairs"
+								width="550"
+								height="550"
+							/>
 							<span className="text-center">Matching Pairs</span>
 						</div>
 					</Link>
 					<Link href="/play/6/unjumble col-span-1">
 						<div className="flex flex-col items-center">
-							<Image src="/gameIcons/unjumble.png" alt="Unjumble" />
+							<Image
+								src="/gameIcons/unjumble.png"
+								alt="Unjumble"
+								width="550"
+								height="550"
+							/>
 							<span className="text-center">Unjumble</span>
 						</div>
 					</Link>
 					<Link href="/play/6/spell col-span-1">
 						<div className="flex flex-col items-center">
-							<Image src="/gameIcons/spellWord.png" alt="Spell the Word" />
+							<Image
+								src="/gameIcons/spellWord.png"
+								alt="Spell the Word"
+								width="550"
+								height="550"
+							/>
 							<span className="text-center">Spell the Word</span>
 						</div>
 					</Link>
 					<Link href="/play/6/wordsearch col-span-1">
 						<div className="flex flex-col items-center">
-							<Image src="/gameIcons/wordSearch.png" alt="Wordsearch" />
+							<Image
+								src="/gameIcons/wordSearch.png"
+								alt="Wordsearch"
+								width="550"
+								height="550"
+							/>
 							<span className="text-center">Wordsearch</span>
 						</div>
 					</Link>
 					<Link href="/play/6/whack col-span-1">
 						<div className="flex flex-col items-center">
-							<Image src="/gameIcons/whackMole.png" alt="Whack-a-mole" />
+							<Image
+								src="/gameIcons/whackMole.png"
+								alt="Whack-a-mole"
+								width="550"
+								height="550"
+							/>
 							<span className="text-center">Whack-a-mole</span>
 						</div>
 					</Link>
 					<Link href="/play/6/balloon col-span-1">
 						<div className="flex flex-col items-center">
-							<Image src="/gameIcons/balloonPop.png" alt="Balloon Pop" />
+							<Image
+								src="/gameIcons/balloonPop.png"
+								alt="Balloon Pop"
+								width="550"
+								height="550"
+							/>
+							<span className="text-center">Balloon Pop</span>
+						</div>
+					</Link>
+				</div>
+
+				<div className="w-full rounded-xl bg-sky-500 p-5 text-white flex items-center justify-between">
+					<div className="space-y-2.5">
+						<h3 className="text-2xl font-bold">Lesson 7</h3>
+					</div>
+				</div>
+				<div className="grid grid-cols-4 gap-4 mt-4">
+					<Link href="/play/6/matching">
+						<div className="flex flex-col items-center">
+							<Image
+								src="/gameIcons/matchingPairs.png"
+								alt="Matching Pairs"
+								width="550"
+								height="550"
+							/>
+							<span className="text-center">Matching Pairs</span>
+						</div>
+					</Link>
+					<Link href="/play/6/unjumble col-span-1">
+						<div className="flex flex-col items-center">
+							<Image
+								src="/gameIcons/unjumble.png"
+								alt="Unjumble"
+								width="550"
+								height="550"
+							/>
+							<span className="text-center">Unjumble</span>
+						</div>
+					</Link>
+					<Link href="/play/6/spell col-span-1">
+						<div className="flex flex-col items-center">
+							<Image
+								src="/gameIcons/spellWord.png"
+								alt="Spell the Word"
+								width="550"
+								height="550"
+							/>
+							<span className="text-center">Spell the Word</span>
+						</div>
+					</Link>
+					<Link href="/play/6/wordsearch col-span-1">
+						<div className="flex flex-col items-center">
+							<Image
+								src="/gameIcons/wordSearch.png"
+								alt="Wordsearch"
+								width="550"
+								height="550"
+							/>
+							<span className="text-center">Wordsearch</span>
+						</div>
+					</Link>
+					<Link href="/play/6/whack col-span-1">
+						<div className="flex flex-col items-center">
+							<Image
+								src="/gameIcons/whackMole.png"
+								alt="Whack-a-mole"
+								width="550"
+								height="550"
+							/>
+							<span className="text-center">Whack-a-mole</span>
+						</div>
+					</Link>
+					<Link href="/play/6/balloon col-span-1">
+						<div className="flex flex-col items-center">
+							<Image
+								src="/gameIcons/balloonPop.png"
+								alt="Balloon Pop"
+								width="550"
+								height="550"
+							/>
+							<span className="text-center">Balloon Pop</span>
+						</div>
+					</Link>
+				</div>
+
+				<div className="w-full rounded-xl bg-sky-500 p-5 text-white flex items-center justify-between">
+					<div className="space-y-2.5">
+						<h3 className="text-2xl font-bold">Lesson 8</h3>
+					</div>
+				</div>
+				<div className="grid grid-cols-4 gap-4 mt-4">
+					<Link href="/play/6/matching">
+						<div className="flex flex-col items-center">
+							<Image
+								src="/gameIcons/matchingPairs.png"
+								alt="Matching Pairs"
+								width="550"
+								height="550"
+							/>
+							<span className="text-center">Matching Pairs</span>
+						</div>
+					</Link>
+					<Link href="/play/6/unjumble col-span-1">
+						<div className="flex flex-col items-center">
+							<Image
+								src="/gameIcons/unjumble.png"
+								alt="Unjumble"
+								width="550"
+								height="550"
+							/>
+							<span className="text-center">Unjumble</span>
+						</div>
+					</Link>
+					<Link href="/play/6/spell col-span-1">
+						<div className="flex flex-col items-center">
+							<Image
+								src="/gameIcons/spellWord.png"
+								alt="Spell the Word"
+								width="550"
+								height="550"
+							/>
+							<span className="text-center">Spell the Word</span>
+						</div>
+					</Link>
+					<Link href="/play/6/wordsearch col-span-1">
+						<div className="flex flex-col items-center">
+							<Image
+								src="/gameIcons/wordSearch.png"
+								alt="Wordsearch"
+								width="550"
+								height="550"
+							/>
+							<span className="text-center">Wordsearch</span>
+						</div>
+					</Link>
+					<Link href="/play/6/whack col-span-1">
+						<div className="flex flex-col items-center">
+							<Image
+								src="/gameIcons/whackMole.png"
+								alt="Whack-a-mole"
+								width="550"
+								height="550"
+							/>
+							<span className="text-center">Whack-a-mole</span>
+						</div>
+					</Link>
+					<Link href="/play/6/balloon col-span-1">
+						<div className="flex flex-col items-center">
+							<Image
+								src="/gameIcons/balloonPop.png"
+								alt="Balloon Pop"
+								width="550"
+								height="550"
+							/>
 							<span className="text-center">Balloon Pop</span>
 						</div>
 					</Link>
