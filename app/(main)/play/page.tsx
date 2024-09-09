@@ -120,6 +120,28 @@ const PlayPage = async () => {
 							<span className="text-center">Spell the Word</span>
 						</div>
 					</Link>
+					<Link href="/play/6/findmatch">
+						<div className="flex flex-col items-center">
+							<Image
+								src="/gameIcons/findMatch.png"
+								alt="Find the Match"
+								width="550"
+								height="550"
+							/>
+							<span className="text-center">Find the Match</span>
+						</div>
+					</Link>
+					<Link href="/play/6/imagequiz">
+						<div className="flex flex-col items-center">
+							<Image
+								src="/gameIcons/imageQuiz.png"
+								alt="Image Quiz"
+								width="550"
+								height="550"
+							/>
+							<span className="text-center">Image Quiz</span>
+						</div>
+					</Link>
 				</div>
 				<h2 className="my-6 font-bold text-xl">Advanced</h2>
 				<div className="grid grid-cols-4 gap-4 mt-4">
@@ -132,6 +154,17 @@ const PlayPage = async () => {
 								height="550"
 							/>
 							<span className="text-center">Anagram</span>
+						</div>
+					</Link>
+					<Link href="/play/6/flyingfruit">
+						<div className="flex flex-col items-center">
+							<Image
+								src="/gameIcons/flyingFruit.png"
+								alt="Flying Fruit"
+								width="550"
+								height="550"
+							/>
+							<span className="text-center">Flying Fruit</span>
 						</div>
 					</Link>
 				</div>

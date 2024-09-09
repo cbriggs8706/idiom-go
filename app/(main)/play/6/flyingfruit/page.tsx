@@ -45,7 +45,7 @@ const PlayPage = async () => {
 		<div className="flex flex-col gap-[48px] px-6">
 			<iframe
 				style={{ maxWidth: '100%' }}
-				src="https://wordwall.net/embed/0fe8f749b64c4f00a368b292ba175dba?themeId=1&templateId=79&fontStackId=2"
+				src="https://wordwall.net/embed/9070c817da8641a6a58e57a8d7d96aff?themeId=27&templateId=82&fontStackId=2"
 				width="1000"
 				height="760"
 				allowFullScreen
