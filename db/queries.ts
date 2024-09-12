@@ -4,11 +4,15 @@ import { auth } from '@clerk/nextjs'
 
 import db from '@/db/drizzle'
 import {
+	activities,
+	days,
+	activityProgress,
 	challengeProgress,
 	courses,
 	games,
 	lessons,
 	playLessons,
+	schedules,
 	units,
 	userProgress,
 	userSubscription,
@@ -135,18 +139,23 @@ export const getCourseProgress = cache(async () => {
 		return null
 	}
 
-	const unitsInActiveCourse = await db.query.units.findMany({
-		orderBy: (units, { asc }) => [asc(units.order)],
-		where: eq(units.courseId, userProgress.activeCourseId),
+	const schedulesInActiveCourse = await db.query.schedules.findMany({
+		orderBy: (schedules, { asc }) => [asc(schedules.title)],
+		where: eq(schedules.courseId, userProgress.activeCourseId),
 		with: {
-			lessons: {
-				orderBy: (lessons, { asc }) => [asc(lessons.order)],
+			weeks: {
+				orderBy: (weeks, { asc }) => [asc(weeks.title)],
 				with: {
-					unit: true,
-					challenges: {
+					days: {
+						orderBy: (days, { asc }) => [asc(days.title)],
 						with: {
-							challengeProgress: {
-								where: eq(challengeProgress.userId, userId),
+							weeks: true,
+							activities: {
+								with: {
+									activityProgress: {
+										where: eq(activityProgress.userId, userId),
+									},
+								},
 							},
 						},
 					},
@@ -155,14 +164,14 @@ export const getCourseProgress = cache(async () => {
 		},
 	})
 
-	const firstUncompletedLesson = unitsInActiveCourse
-		.flatMap((unit) => unit.lessons)
-		.find((lesson) => {
-			return lesson.challenges.some((challenge) => {
+	const firstUncompletedDay = schedulesInActiveCourse
+		.flatMap((schedule) => schedule.weeks.flatMap((week) => week.days))
+		.find((day) => {
+			return day.activities.some((activity) => {
 				return (
-					!challenge.challengeProgress ||
-					challenge.challengeProgress.length === 0 ||
-					challenge.challengeProgress.some(
+					!activity.activityProgress ||
+					activity.activityProgress.length === 0 ||
+					activity.activityProgress.some(
 						(progress) => progress.completed === false
 					)
 				)
@@ -170,12 +179,107 @@ export const getCourseProgress = cache(async () => {
 		})
 
 	return {
-		activeLesson: firstUncompletedLesson,
-		activeLessonId: firstUncompletedLesson?.id,
+		activeDay: firstUncompletedDay,
+		activeDayId: firstUncompletedDay?.id,
 	}
 })
+// export const getCourseProgress = cache(async () => {
+// 	const { userId } = await auth()
+// 	const userProgress = await getUserProgress()
 
-export const getLesson = cache(async (id?: number) => {
+// 	if (!userId || !userProgress?.activeCourseId) {
+// 		return null
+// 	}
+
+// 	const unitsInActiveCourse = await db.query.units.findMany({
+// 		orderBy: (units, { asc }) => [asc(units.order)],
+// 		where: eq(units.courseId, userProgress.activeCourseId),
+// 		with: {
+// 			lessons: {
+// 				orderBy: (lessons, { asc }) => [asc(lessons.order)],
+// 				with: {
+// 					unit: true,
+// 					challenges: {
+// 						with: {
+// 							challengeProgress: {
+// 								where: eq(challengeProgress.userId, userId),
+// 							},
+// 						},
+// 					},
+// 				},
+// 			},
+// 		},
+// 	})
+
+// 	const firstUncompletedLesson = unitsInActiveCourse
+// 		.flatMap((unit) => unit.lessons)
+// 		.find((lesson) => {
+// 			return lesson.challenges.some((challenge) => {
+// 				return (
+// 					!challenge.challengeProgress ||
+// 					challenge.challengeProgress.length === 0 ||
+// 					challenge.challengeProgress.some(
+// 						(progress) => progress.completed === false
+// 					)
+// 				)
+// 			})
+// 		})
+
+// 	return {
+// 		activeLesson: firstUncompletedLesson,
+// 		activeLessonId: firstUncompletedLesson?.id,
+// 	}
+// })
+
+// export const getLesson = cache(async (id?: number) => {
+// 	const { userId } = await auth()
+
+// 	if (!userId) {
+// 		return null
+// 	}
+
+// 	const courseProgress = await getCourseProgress()
+
+// 	const lessonId = id || courseProgress?.activeLessonId
+
+// 	if (!lessonId) {
+// 		return null
+// 	}
+
+// 	const data = await db.query.lessons.findFirst({
+// 		where: eq(lessons.id, lessonId),
+// 		with: {
+// 			challenges: {
+// 				orderBy: (challenges, { asc }) => [asc(challenges.order)],
+// 				with: {
+// 					challengeOptions: true,
+// 					challengeProgress: {
+// 						where: eq(challengeProgress.userId, userId),
+// 					},
+// 				},
+// 			},
+// 		},
+// 	})
+
+// 	if (!data || !data.challenges) {
+// 		return null
+// 	}
+
+// 	const normalizedChallenges = data.challenges.map((challenge) => {
+// 		const completed =
+// 			challenge.challengeProgress &&
+// 			challenge.challengeProgress.length > 0 &&
+// 			challenge.challengeProgress.every((progress) => progress.completed)
+
+// 		return { ...challenge, completed }
+// 	})
+
+// 	return { ...data, challenges: normalizedChallenges }
+// })
+
+//
+
+export const getDay = cache(async (id?: number) => {
 	const { userId } = await auth()
 
 	if (!userId) {
@@ -184,87 +288,108 @@ export const getLesson = cache(async (id?: number) => {
 
 	const courseProgress = await getCourseProgress()
 
-	const lessonId = id || courseProgress?.activeLessonId
+	const dayId = id || courseProgress?.activeDayId
 
-	if (!lessonId) {
+	if (!dayId) {
 		return null
 	}
 
-	const data = await db.query.lessons.findFirst({
-		where: eq(lessons.id, lessonId),
+	const data = await db.query.days.findFirst({
+		where: eq(days.id, dayId),
 		with: {
-			challenges: {
-				orderBy: (challenges, { asc }) => [asc(challenges.order)],
+			activities: {
+				orderBy: (activities, { asc }) => [asc(activities.title)],
 				with: {
-					challengeOptions: true,
-					challengeProgress: {
-						where: eq(challengeProgress.userId, userId),
+					activityProgress: {
+						where: eq(activityProgress.userId, userId),
 					},
 				},
 			},
 		},
 	})
 
-	if (!data || !data.challenges) {
+	if (!data || !data.activities) {
 		return null
 	}
 
-	const normalizedChallenges = data.challenges.map((challenge) => {
+	const normalizedActivities = data.activities.map((activity) => {
 		const completed =
-			challenge.challengeProgress &&
-			challenge.challengeProgress.length > 0 &&
-			challenge.challengeProgress.every((progress) => progress.completed)
+			activity.activityProgress &&
+			activity.activityProgress.length > 0 &&
+			activity.activityProgress.every((progress) => progress.completed)
 
-		return { ...challenge, completed }
+		return { ...activity, completed }
 	})
 
-	return { ...data, challenges: normalizedChallenges }
+	return { ...data, activities: normalizedActivities }
 })
 
-export const getGame = cache(async (id?: number) => {
-	const { userId } = await auth()
+// export const getGame = cache(async (id?: number) => {
+// 	const { userId } = await auth()
 
-	if (!userId) {
-		return null
-	}
+// 	if (!userId) {
+// 		return null
+// 	}
 
+// 	const courseProgress = await getCourseProgress()
+
+// 	const gameId = id || courseProgress?.activeLessonId
+
+// 	if (!gameId) {
+// 		return null
+// 	}
+
+// 	const data = await db.query.games.findFirst({
+// 		where: eq(games.id, gameId),
+// 	})
+
+// 	return data
+// })
+
+export const getDayPercentage = cache(async () => {
 	const courseProgress = await getCourseProgress()
 
-	const gameId = id || courseProgress?.activeLessonId
-
-	if (!gameId) {
-		return null
-	}
-
-	const data = await db.query.games.findFirst({
-		where: eq(games.id, gameId),
-	})
-
-	return data
-})
-
-export const getLessonPercentage = cache(async () => {
-	const courseProgress = await getCourseProgress()
-
-	if (!courseProgress?.activeLessonId) {
+	if (!courseProgress?.activeDayId) {
 		return 0
 	}
 
-	const lesson = await getLesson(courseProgress.activeLessonId)
+	const day = await getDay(courseProgress.activeDayId)
 
-	if (!lesson) {
+	if (!day) {
 		return 0
 	}
 
-	const completedChallenges = lesson.challenges.filter(
-		(challenge) => challenge.completed
+	const completedActivities = day.activities.filter(
+		(activity) => activity.completed
 	)
 	const percentage = Math.round(
-		(completedChallenges.length / lesson.challenges.length) * 100
+		(completedActivities.length / day.activities.length) * 100
 	)
 
 	return percentage
 })
+// export const getLessonPercentage = cache(async () => {
+// 	const courseProgress = await getCourseProgress()
+
+// 	if (!courseProgress?.activeLessonId) {
+// 		return 0
+// 	}
+
+// 	const lesson = await getLesson(courseProgress.activeLessonId)
+
+// 	if (!lesson) {
+// 		return 0
+// 	}
+
+// 	const completedChallenges = lesson.challenges.filter(
+// 		(challenge) => challenge.completed
+// 	)
+// 	const percentage = Math.round(
+// 		(completedChallenges.length / lesson.challenges.length) * 100
+// 	)
+
+// 	return percentage
+// })
 
 const DAY_IN_MS = 86_400_000
 export const getUserSubscription = cache(async () => {
@@ -307,4 +432,73 @@ export const getTopTenUsers = cache(async () => {
 	})
 
 	return data
+})
+
+//
+
+export const getSchedules = cache(async () => {
+	const { userId } = await auth()
+	const userProgress = await getUserProgress()
+
+	if (!userId || !userProgress?.activeCourseId) {
+		return []
+	}
+
+	const data = await db.query.schedules.findMany({
+		orderBy: (schedules, { asc }) => [asc(schedules.title)],
+		where: eq(schedules.courseId, userProgress.activeCourseId),
+		with: {
+			weeks: {
+				orderBy: (weeks, { asc }) => [asc(weeks.title)],
+				with: {
+					days: {
+						orderBy: (days, { asc }) => [asc(days.title)],
+						with: {
+							activities: {
+								orderBy: (activities, { asc }) => [asc(activities.title)],
+								with: {
+									activityProgress: {
+										where: eq(activityProgress.userId, userId),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	})
+
+	const normalizedData = data.map((schedule) => {
+		const weeksWithCompletedStatus = schedule.weeks.map((week) => {
+			const daysWithCompletedStatus = week.days.map((day) => {
+				if (day.activities.length === 0) {
+					return { ...day, completed: false }
+				}
+
+				const allCompletedActivities = day.activities.every((activity) => {
+					return (
+						activity.activityProgress &&
+						activity.activityProgress.length > 0 &&
+						activity.activityProgress.every((progress) => progress.completed)
+					)
+				})
+
+				return { ...day, completed: allCompletedActivities }
+			})
+
+			const allCompletedDays = daysWithCompletedStatus.every(
+				(day) => day.completed
+			)
+			return {
+				...week,
+				days: daysWithCompletedStatus,
+				completed: allCompletedDays,
+			}
+		})
+
+		return { ...schedule, weeks: weeksWithCompletedStatus }
+	})
+	console.log(normalizedData)
+	return normalizedData
 })

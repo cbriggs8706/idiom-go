@@ -29,6 +29,23 @@ import { GameList } from './game/list'
 import { GameCreate } from './game/create'
 import { GameEdit } from './game/edit'
 
+import { ScheduleList } from './schedule/list'
+import { ScheduleCreate } from './schedule/create'
+import { ScheduleEdit } from './schedule/edit'
+import { WeekList } from './week/list'
+import { WeekCreate } from './week/create'
+import { WeekEdit } from './week/edit'
+import { DayList } from './day/list'
+import { DayCreate } from './day/create'
+import { DayEdit } from './day/edit'
+
+import { CategoryList } from './category/list'
+import { CategoryCreate } from './category/create'
+import { CategoryEdit } from './category/edit'
+import { ActivityList } from './activity/list'
+import { ActivityCreate } from './activity/create'
+import { ActivityEdit } from './activity/edit'
+
 const dataProvider = simpleRestProvider('/api')
 
 const App = () => {
@@ -85,6 +102,41 @@ const App = () => {
 				create={GameCreate}
 				edit={GameEdit}
 				recordRepresentation="text"
+			/>
+			<Resource
+				name="schedules"
+				list={ScheduleList}
+				create={ScheduleCreate}
+				edit={ScheduleEdit}
+				recordRepresentation="title"
+			/>
+			<Resource
+				name="weeks"
+				list={WeekList}
+				create={WeekCreate}
+				edit={WeekEdit}
+				recordRepresentation="title"
+			/>
+			<Resource
+				name="days"
+				list={DayList}
+				create={DayCreate}
+				edit={DayEdit}
+				recordRepresentation="title"
+			/>
+			<Resource
+				name="categories"
+				list={CategoryList}
+				create={CategoryCreate}
+				edit={CategoryEdit}
+				recordRepresentation="title"
+			/>
+			<Resource
+				name="activities"
+				list={ActivityList}
+				create={ActivityCreate}
+				edit={ActivityEdit}
+				recordRepresentation="title"
 			/>
 		</Admin>
 	)
