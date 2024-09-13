@@ -7,6 +7,7 @@ import {
 	serial,
 	text,
 	timestamp,
+	primaryKey,
 } from 'drizzle-orm/pg-core'
 
 export const courses = pgTable('courses', {
@@ -19,7 +20,8 @@ export const coursesRelations = relations(courses, ({ many }) => ({
 	userProgress: many(userProgress),
 	units: many(units),
 	categories: many(categories),
-	schedules: many(schedules),
+	coursesToCategories: many(coursesToCategories),
+	coursesToSchedules: many(coursesToSchedules),
 }))
 
 export const units = pgTable('units', {
@@ -146,66 +148,83 @@ export const userSubscription = pgTable('user_subscription', {
 	stripeCurrentPeriodEnd: timestamp('stripe_current_period_end').notNull(),
 })
 
-export const playLessons = pgTable('play_lessons', {
-	id: serial('id').primaryKey(),
-	title: text('title').notNull(), // Lesson 1
-	description: text('description').notNull(), // Practice the basics of Spanish
-	courseId: integer('course_id')
-		.references(() => courses.id, { onDelete: 'cascade' })
-		.notNull(),
-	order: integer('order').notNull(),
-})
-
-export const playLessonsRelations = relations(playLessons, ({ many, one }) => ({
-	course: one(courses, {
-		fields: [playLessons.courseId],
-		references: [courses.id],
-	}),
-	games: many(games),
-}))
-
-export const games = pgTable('games', {
-	id: serial('id').primaryKey(),
-	title: text('title').notNull(),
-	playLessonId: integer('play_lesson_id')
-		.references(() => playLessons.id, { onDelete: 'cascade' })
-		.notNull(),
-	src: text('src').notNull(),
-	order: integer('order').notNull(),
-})
-
-export const gamesRelations = relations(games, ({ one, many }) => ({
-	playLesson: one(playLessons, {
-		fields: [games.playLessonId],
-		references: [playLessons.id],
-	}),
-}))
-
 export const categories = pgTable('categories', {
 	id: serial('id').primaryKey(),
 	title: text('title').notNull(),
-	courseId: integer('course_id')
-		.references(() => courses.id, { onDelete: 'cascade' })
-		.notNull(),
 })
 
 export const categoryRelations = relations(categories, ({ many }) => ({
-	courses: many(courses),
 	activities: many(activities),
+	coursesToCategories: many(coursesToCategories),
 }))
+
+export const coursesToCategories = pgTable(
+	'courses_to_categories',
+	{
+		courseId: integer('course_id')
+			.notNull()
+			.references(() => courses.id),
+		categoryId: integer('category_id')
+			.notNull()
+			.references(() => categories.id),
+	},
+	(t) => ({
+		pk: primaryKey({ columns: [t.courseId, t.categoryId] }),
+	})
+)
+
+export const coursesToCategoriesRelations = relations(
+	coursesToCategories,
+	({ one }) => ({
+		category: one(categories, {
+			fields: [coursesToCategories.categoryId],
+			references: [categories.id],
+		}),
+		course: one(courses, {
+			fields: [coursesToCategories.courseId],
+			references: [courses.id],
+		}),
+	})
+)
 
 export const schedules = pgTable('schedules', {
 	id: serial('id').primaryKey(),
 	title: text('title').notNull(),
-	courseId: integer('course_id')
-		.references(() => courses.id, { onDelete: 'cascade' })
-		.notNull(),
 })
 
 export const scheduleRelations = relations(schedules, ({ many }) => ({
-	courses: many(courses),
 	weeks: many(weeks),
+	coursesToSchedules: many(coursesToSchedules),
 }))
+
+export const coursesToSchedules = pgTable(
+	'courses_to_schedules',
+	{
+		courseId: integer('course_id')
+			.notNull()
+			.references(() => courses.id),
+		scheduleId: integer('schedule_id')
+			.notNull()
+			.references(() => schedules.id),
+	},
+	(t) => ({
+		pk: primaryKey({ columns: [t.courseId, t.scheduleId] }),
+	})
+)
+
+export const coursesToSchedulesRelations = relations(
+	coursesToSchedules,
+	({ one }) => ({
+		schedule: one(schedules, {
+			fields: [coursesToSchedules.scheduleId],
+			references: [schedules.id],
+		}),
+		course: one(courses, {
+			fields: [coursesToSchedules.courseId],
+			references: [courses.id],
+		}),
+	})
+)
 
 export const weeks = pgTable('weeks', {
 	id: serial('id').primaryKey(),
@@ -215,8 +234,11 @@ export const weeks = pgTable('weeks', {
 		.notNull(),
 })
 
-export const weekRelations = relations(weeks, ({ many }) => ({
-	schedules: many(schedules),
+export const weekRelations = relations(weeks, ({ one, many }) => ({
+	schedule: one(schedules, {
+		fields: [weeks.scheduleId],
+		references: [schedules.id],
+	}),
 	days: many(days),
 }))
 
@@ -228,15 +250,43 @@ export const days = pgTable('days', {
 		.notNull(),
 })
 
-export const dayRelations = relations(days, ({ many }) => ({
-	weeks: many(weeks),
-	activities: many(activities),
+export const dayRelations = relations(days, ({ one, many }) => ({
+	week: one(weeks, {
+		fields: [days.weekId],
+		references: [weeks.id],
+	}),
+	daysToActivities: many(daysToActivities),
 }))
 
-// export const lesson = pgTable('lesson', {
-// 	id: serial('id').primaryKey(),
-// 	title: text('title').notNull(),
-// })
+export const daysToActivities = pgTable(
+	'days_to_activities',
+	{
+		dayId: integer('day_id')
+			.notNull()
+			.references(() => days.id),
+		activityId: integer('activity_id')
+			.notNull()
+			.references(() => categories.id),
+	},
+	(t) => ({
+		pk: primaryKey({ columns: [t.dayId, t.activityId] }),
+	})
+)
+
+export const daysToActivitiesRelations = relations(
+	daysToActivities,
+	({ one }) => ({
+		day: one(days, {
+			fields: [daysToActivities.dayId],
+			references: [days.id],
+		}),
+		activities: one(activities, {
+			fields: [daysToActivities.activityId],
+			references: [activities.id],
+		}),
+	})
+)
+
 export const lessonsEnum = pgEnum('lesson', [
 	'1',
 	'2',
@@ -260,40 +310,19 @@ export const lessonsEnum = pgEnum('lesson', [
 	'20',
 ])
 
-// export const lessonRelations = relations(lesson, ({ many }) => ({
-// 	activities: many(activities),
-// }))
-
-// export const types = pgTable('types', {
-// 	id: serial('id').primaryKey(),
-// 	title: text('title').notNull(),
-// })
-
 export const typesEnum = pgEnum('type', ['SELECT', 'ASSIST', 'HEAR'])
-
-// export const typeRelations = relations(types, ({ many }) => ({
-// 	activities: many(activities),
-// }))
 
 export const activities = pgTable('activities', {
 	id: serial('id').primaryKey(),
 	title: text('title').notNull(),
 	lessonNumber: lessonsEnum('lesson').notNull(),
 	type: typesEnum('types').notNull(),
-	dayId: integer('day_id')
-		.references(() => days.id, { onDelete: 'cascade' })
-		.notNull(),
-	categoryId: integer('category_id')
-		.references(() => categories.id, { onDelete: 'cascade' })
-		.notNull(),
 })
 
 export const activityRelations = relations(activities, ({ one, many }) => ({
-	days: many(days),
-	// lesson: one(lesson),
-	// types: one(types),
 	categories: one(categories),
 	activityProgress: many(activityProgress),
+	daysToActivities: many(daysToActivities),
 }))
 
 export const activityProgress = pgTable('activity_progress', {
