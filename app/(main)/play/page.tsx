@@ -3,10 +3,10 @@ import { redirect } from 'next/navigation'
 import { FeedWrapper } from '@/components/feed-wrapper'
 import { UserProgress } from '@/components/user-progress'
 import { StickyWrapper } from '@/components/sticky-wrapper'
-import { games, playLessons as playLessonsSchema } from '@/db/schema'
+// import { games, playLessons as playLessonsSchema } from '@/db/schema'
 import {
 	getCourseProgress,
-	getPlayLessons,
+	// getPlayLessons,
 	getUserProgress,
 	getUserSubscription,
 } from '@/db/queries'
@@ -21,13 +21,14 @@ import { Calendar } from '@/components/ui/calendar'
 const PlayPage = async () => {
 	const userProgressData = getUserProgress()
 	const courseProgressData = getCourseProgress()
-	const playLessonsData = getPlayLessons()
+	// const playLessonsData = getPlayLessons()
 	const userSubscriptionData = getUserSubscription()
 
-	const [userProgress, playLessons, courseProgress, userSubscription] =
+	const [userProgress, courseProgress, userSubscription] =
+		// const [userProgress, playLessons, courseProgress, userSubscription] =
 		await Promise.all([
 			userProgressData,
-			playLessonsData,
+			// playLessonsData,
 			courseProgressData,
 			userSubscriptionData,
 		])
@@ -55,17 +56,17 @@ const PlayPage = async () => {
 			</StickyWrapper>
 			<FeedWrapper>
 				<Header title={userProgress.activeCourse.title} />
-				{playLessons.map((playLesson) => (
+				{/* {playLessons.map((playLesson) => (
 					<div key={playLesson.id} className="mb-10">
-						{/* <PlayLesson
+						<PlayLesson
 							id={playLesson.id}
 							order={playLesson.order}
 							description={playLesson.description}
 							title={playLesson.title}
 							games={playLesson.games}
-						/> */}
+						/>
 					</div>
-				))}
+				))} */}
 				<div className="w-full rounded-xl bg-sky-500 p-5 text-white flex items-center justify-between">
 					<div className="space-y-2.5">
 						<h3 className="text-2xl font-bold">Lesson 6</h3>
