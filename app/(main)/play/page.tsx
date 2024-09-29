@@ -11,7 +11,7 @@ import {
 	getUserSubscription,
 } from '@/db/queries'
 
-import { PlayLesson } from './play-lesson'
+// import { PlayLesson } from './play-lesson'
 import { Header } from './header'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
