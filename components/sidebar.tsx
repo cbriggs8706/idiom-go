@@ -29,41 +29,41 @@ export const Sidebar = ({ className }: Props) => {
 			</Link>
 			<div className="flex flex-col gap-y-2 flex-1">
 				<SidebarItem label="Learn" href="/learn" iconSrc="/youtube.svg" />
-				<SidebarItem
+				{/* <SidebarItem
 					label="Speak x"
 					href="#"
 					// href="/speak"
 					iconSrc="/speaking-head-in-silhouette.svg"
-				/>
+				/> */}
 				<SidebarItem label="Play" href="/play" iconSrc="/video-game.svg" />
-				<SidebarItem
+				{/* <SidebarItem
 					label="Memorize x"
 					href="#"
 					// href="/memorize"
 					iconSrc="/card-file-box.svg"
-				/>
-				<SidebarItem
+				/> */}
+				{/* <SidebarItem
 					label="Read x"
 					href="#"
 					// href="/read"
 					iconSrc="/open-book.svg"
-				/>
-				<SidebarItem
+				/> */}
+				{/* <SidebarItem
 					label="Print x"
 					href="#"
 					// href="/print"
 					iconSrc="/printer.svg"
-				/>
-				<SidebarItem
+				/> */}
+				{/* <SidebarItem
 					label="Calendar"
 					href="/calendar"
 					iconSrc="/spiral-calendar-pad.svg"
-				/>
-				<SidebarItem
+				/> */}
+				{/* <SidebarItem
 					label="Help"
 					href="/help"
 					iconSrc="/information-source.svg"
-				/>
+				/> */}
 				{/* <SidebarItem
 					label="Leaderboard"
 					href="/leaderboard"
