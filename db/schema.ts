@@ -167,3 +167,42 @@ export const userSubscription = pgTable('user_subscription', {
 	stripePriceId: text('stripe_price_id').notNull(),
 	stripeCurrentPeriodEnd: timestamp('stripe_current_period_end').notNull(),
 })
+
+// Drizzle schema (Postgres)
+export const words = pgTable('words', {
+	id: serial('id').primaryKey(),
+	heb: text('heb').notNull(),
+	hebNiqqud: text('hebNiqqud').notNull(),
+	eng: text('eng').notNull(),
+	engDefinition: text('engDefinition'),
+	genderPerson: text('genderPerson'),
+	partOfSpeech: text('partOfSpeech').array(),
+	ipa: text('ipa'),
+	engTransliteration: text('engTransliteration'),
+	dictionaryUrl: text('dictionaryUrl'),
+	images: text('images').array(),
+	hebAudio: text('hebAudio'),
+	engAudio: text('engAudio'),
+	synonyms: integer('synonyms').array(),
+	antonyms: integer('antonyms').array(),
+	lessons: text('lessons').array(),
+	scriptures: text('scriptures').array(),
+	strongs: text('strongs'),
+	type: text('type'),
+	category: text('category'),
+})
+
+export const wordForms = pgTable('word_forms', {
+	id: serial('id').primaryKey(),
+	wordId: integer('word_id').references(() => words.id),
+	formType: text('form_type'), // base, prefix, conjugation, suffix, construct
+	subtype: text('subtype'), // past, present, future, plural, etc.
+	genderPerson: text('genderPerson'),
+	heb: text('heb'),
+	hebNiqqud: text('hebNiqqud').notNull(),
+	eng: text('eng'),
+	ipa: text('ipa'),
+	hebAudio: text('hebAudio'),
+	lessons: text('lessons').array(),
+	scriptures: text('scriptures').array(),
+})
