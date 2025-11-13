@@ -15,7 +15,7 @@ import { getActiveCourseId, getUserId } from '@/lib/auth'
 
 // import { events } from '@/db/schema'
 
-import db from '@/db/drizzle'
+import { neonDb } from '@/db/neon/client'
 import {
 	challengeProgress,
 	courses,
@@ -39,7 +39,7 @@ import {
 	studyGroups,
 	studyGroupMembers,
 	users,
-} from '@/db/schema'
+} from '@/db/neon/schema'
 import { tr } from 'date-fns/locale'
 
 export async function getUserProgress(userIdOverride?: string | null) {
@@ -75,7 +75,7 @@ export async function getUserProgress(userIdOverride?: string | null) {
 	}
 
 	// ✅ Pull base user progress (profile, activeCourseId, etc.)
-	const baseProgress = await db
+	const baseProgress = await neonDb
 		.select({
 			userId: userProgress.userId,
 			userName: userProgress.userName,
@@ -114,7 +114,7 @@ export async function getUserProgress(userIdOverride?: string | null) {
 	// ✅ Fetch their course progress for the active course
 	let courseProgress = null
 	if (baseProgress.activeCourseId) {
-		courseProgress = await db.query.userCourseProgress.findFirst({
+		courseProgress = await neonDb.query.userCourseProgress.findFirst({
 			where: and(
 				eq(userCourseProgress.userId, userId),
 				eq(userCourseProgress.courseId, baseProgress.activeCourseId)
@@ -148,7 +148,7 @@ export const getUnits = cache(async (userIdOverride?: string | null) => {
 	if (!activeCourseId) return []
 
 	// ✅ Drizzle uses `(table, helpers)` callback args; no named alias needed
-	const data = await db.query.units.findMany({
+	const data = await neonDb.query.units.findMany({
 		where: eq(units.courseId, activeCourseId),
 		orderBy: (tbl, { asc }) => [asc(tbl.order)],
 		with: {
@@ -203,7 +203,7 @@ export const getUnits = cache(async (userIdOverride?: string | null) => {
 // 		return []
 // 	}
 
-// 	const data = await db.query.units.findMany({
+// 	const data = await neonDb.query.units.findMany({
 // 		orderBy: (units, { asc }) => [asc(units.order)],
 // 		where: eq(units.courseId, userProgress.activeCourseId),
 // 		with: {
@@ -247,13 +247,13 @@ export const getUnits = cache(async (userIdOverride?: string | null) => {
 // })
 
 export const getCourses = cache(async () => {
-	const data = await db.query.courses.findMany()
+	const data = await neonDb.query.courses.findMany()
 
 	return data
 })
 
 export const getCourseById = cache(async (courseId: number) => {
-	const data = await db.query.courses.findFirst({
+	const data = await neonDb.query.courses.findFirst({
 		where: eq(courses.id, courseId),
 		with: {
 			units: {
@@ -274,7 +274,7 @@ export async function getAllUserCourseProgress() {
 	const userId = await getUserId()
 	if (!userId) return []
 
-	const results = await db
+	const results = await neonDb
 		.select({
 			courseId: userCourseProgress.courseId,
 			points: userCourseProgress.points,
@@ -310,7 +310,7 @@ export const getCourseProgress = cache(
 			}
 		}
 
-		const unitsInActiveCourse = await db.query.units.findMany({
+		const unitsInActiveCourse = await neonDb.query.units.findMany({
 			where: eq(units.courseId, activeCourseId),
 			orderBy: (tbl, { asc }) => [asc(tbl.order)],
 			with: {
@@ -377,7 +377,7 @@ export const getCourseProgress = cache(
 // 		return null
 // 	}
 
-// 	const unitsInActiveCourse = await db.query.units.findMany({
+// 	const unitsInActiveCourse = await neonDb.query.units.findMany({
 // 		orderBy: (units, { asc }) => [asc(units.order)],
 // 		where: eq(units.courseId, userProgress.activeCourseId),
 // 		with: {
@@ -425,7 +425,7 @@ export const getLesson = cache(
 		const lessonId = id || courseProgress?.activeLessonId
 		if (!lessonId) return null
 
-		const data = await db.query.lessons.findFirst({
+		const data = await neonDb.query.lessons.findFirst({
 			where: eq(lessons.id, lessonId),
 			with: {
 				challenges: {
@@ -457,7 +457,7 @@ export const getLesson = cache(
 )
 
 export async function getAllHebrewLessonScripts(courseId?: number) {
-	const base = db
+	const base = neonDb
 		.select({
 			id: hebrewLessonScripts.id,
 			courseId: hebrewLessonScripts.courseId,
@@ -484,7 +484,7 @@ export async function getAllHebrewLessonScripts(courseId?: number) {
 }
 
 export const getHebrewLessonScripts = async (courseId: number) => {
-	const results = await db
+	const results = await neonDb
 		.select({
 			id: hebrewLessonScripts.id,
 			courseId: hebrewLessonScripts.courseId,
@@ -505,14 +505,14 @@ export const getHebrewLessonScripts = async (courseId: number) => {
 }
 
 export async function getHebrewLessonScript(lessonScriptId: number) {
-	return db.query.hebrewLessonScripts.findFirst({
+	return neonDb.query.hebrewLessonScripts.findFirst({
 		where: eq(hebrewLessonScripts.id, lessonScriptId),
 	})
 }
 
 // TODO fix to match hebrew
 // export async function getAllEnglishLessonScripts(courseId?: number) {
-// 	const base = db
+// 	const base = neonDb
 // 		.select({
 // 			id: englishLessonScripts.id,
 // 			courseId: englishLessonScripts.courseId,
@@ -536,7 +536,7 @@ export async function getHebrewLessonScript(lessonScriptId: number) {
 // }
 
 export const getEnglishLessonScripts = async () => {
-	const rows = await db
+	const rows = await neonDb
 		.select({
 			id: englishLessonScripts.id,
 			lessonId: englishLessonScripts.lessonId,
@@ -554,7 +554,7 @@ export const getEnglishLessonScripts = async () => {
 }
 
 export const getEnglishSlideDecks = async () => {
-	const rows = await db
+	const rows = await neonDb
 		.select({
 			id: englishSlides.id,
 			lessonId: englishSlides.lessonId,
@@ -573,7 +573,7 @@ export const getEnglishSlideDecks = async () => {
 // 		prefix ? ilike(lessons.lessonNumber, `${prefix}%`) : undefined,
 // 	].filter(Boolean)
 
-// 	const rows = await db
+// 	const rows = await neonDb
 // 		.select({
 // 			id: englishLessonScripts.id,
 // 			// cast to int so downstream code treats it as number
@@ -596,18 +596,18 @@ export const getEnglishSlideDecks = async () => {
 // }
 
 export async function getEnglishLessonScript(lessonScriptId: number) {
-	return db.query.englishLessonScripts.findFirst({
+	return neonDb.query.englishLessonScripts.findFirst({
 		where: eq(englishLessonScripts.id, lessonScriptId),
 	})
 }
 export async function getEnglishSlideDeck(slideDeckId: number) {
-	return db.query.englishSlides.findFirst({
+	return neonDb.query.englishSlides.findFirst({
 		where: eq(englishSlides.id, slideDeckId),
 	})
 }
 
 export const getGrammarLessons = async () => {
-	const results = await db
+	const results = await neonDb
 		.select({
 			id: grammarLessons.id,
 			lessonId: grammarLessons.lessonId,
@@ -641,7 +641,7 @@ export const getUserSubscription = cache(async () => {
 
 	if (!userId) return null
 
-	const data = await db.query.userSubscription.findFirst({
+	const data = await neonDb.query.userSubscription.findFirst({
 		where: eq(userSubscription.userId, userId),
 	})
 
@@ -664,7 +664,7 @@ export const getTopTenUsers = cache(async () => {
 		return []
 	}
 
-	const data = await db.query.userProgress.findMany({
+	const data = await neonDb.query.userProgress.findMany({
 		orderBy: (userProgress, { desc }) => [desc(userProgress.points)],
 		limit: 10,
 		columns: {
@@ -679,7 +679,7 @@ export const getTopTenUsers = cache(async () => {
 })
 
 export const getTopTwentyUsers = cache(async () => {
-	return await db
+	return await neonDb
 		.select({
 			userId: userProgress.userId,
 			userName: userProgress.userName,
@@ -696,7 +696,7 @@ export const getTopTwentyUsers = cache(async () => {
 
 // 🆕 NEW: Per-course leaderboard using user_course_progress
 export async function getTopTwentyUsersByCourse(courseId: number) {
-	const rawUsers = await db
+	const rawUsers = await neonDb
 		.select({
 			userId: userCourseProgress.userId,
 			userName: userProgress.userName,
@@ -718,7 +718,7 @@ export async function getTopTwentyUsersByCourse(courseId: number) {
 }
 
 export async function getTopTwentyHebrewUsersByCourse(courseId: number) {
-	const rawUsers = await db
+	const rawUsers = await neonDb
 		.select({
 			userId: userCourseProgress.userId,
 			userName: userProgress.userName,
@@ -746,7 +746,7 @@ export async function getTopTwentyHebrewUsersByCourse(courseId: number) {
 }
 
 export async function getPrayerWithLines(prayerId: number) {
-	return db.query.hebrewPrayerLibrary.findFirst({
+	return neonDb.query.hebrewPrayerLibrary.findFirst({
 		where: eq(hebrewPrayerLibrary.id, prayerId),
 		with: {
 			lines: {
@@ -757,7 +757,7 @@ export async function getPrayerWithLines(prayerId: number) {
 }
 
 export async function getAllPrayersWithLines() {
-	return db.query.hebrewPrayerLibrary.findMany({
+	return neonDb.query.hebrewPrayerLibrary.findMany({
 		orderBy: asc(hebrewPrayerLibrary.order), // ✅ use correct column
 		with: {
 			lines: {
@@ -768,20 +768,20 @@ export async function getAllPrayersWithLines() {
 }
 
 export async function getAllPrayers() {
-	return db.query.hebrewPrayerLibrary.findMany({
+	return neonDb.query.hebrewPrayerLibrary.findMany({
 		orderBy: asc(hebrewPrayerLibrary.order),
 	})
 }
 
 export async function getPrayerLines(prayerId: number) {
-	return db.query.hebrewPrayerLine.findMany({
+	return neonDb.query.hebrewPrayerLine.findMany({
 		where: eq(hebrewPrayerLine.hebrewPrayerLibraryId, prayerId),
 		orderBy: asc(sql`${hebrewPrayerLine.lineNumbers}[1]`),
 	})
 }
 
 export async function getSongsWithLines(prayerId: number) {
-	return db.query.hebrewMusicLibrary.findFirst({
+	return neonDb.query.hebrewMusicLibrary.findFirst({
 		where: eq(hebrewMusicLibrary.id, prayerId),
 		with: {
 			lines: {
@@ -792,7 +792,7 @@ export async function getSongsWithLines(prayerId: number) {
 }
 
 export async function getAllSongsWithLines() {
-	return db.query.hebrewMusicLibrary.findMany({
+	return neonDb.query.hebrewMusicLibrary.findMany({
 		orderBy: asc(hebrewMusicLibrary.order), // ✅ use correct column
 		with: {
 			lines: {
@@ -803,13 +803,13 @@ export async function getAllSongsWithLines() {
 }
 
 export async function getAllSongs() {
-	return db.query.hebrewMusicLibrary.findMany({
+	return neonDb.query.hebrewMusicLibrary.findMany({
 		orderBy: asc(hebrewMusicLibrary.order),
 	})
 }
 
 export async function getSongLines(prayerId: number) {
-	return db.query.hebrewMusicLine.findMany({
+	return neonDb.query.hebrewMusicLine.findMany({
 		where: eq(hebrewMusicLine.hebrewMusicLibraryId, prayerId),
 		orderBy: asc(sql`${hebrewMusicLine.lineNumbers}[1]`),
 	})
@@ -819,7 +819,7 @@ export async function getUserProgressWithTribe() {
 	const userId = await getUserId()
 	if (!userId) return null
 
-	const result = await db
+	const result = await neonDb
 		.select({
 			userId: userProgress.userId,
 			userName: userProgress.userName,
@@ -865,7 +865,7 @@ export async function getUserProgressWithTribe() {
 export async function getTribeMembers(tribeId: number) {
 	if (!tribeId) return []
 
-	const members = await db
+	const members = await neonDb
 		.select({
 			userId: userProgress.userId,
 			userName: userProgress.userName,
@@ -908,7 +908,7 @@ function parseLessonNumber(lesson: string | null): number {
 
 export async function getTribeLeaderboard() {
 	// 🧩 Get all users with tribe assignment
-	const users = await db
+	const users = await neonDb
 		.select({
 			tribeId: userProgress.tribeId,
 			userName: userProgress.userName,
@@ -925,7 +925,7 @@ export async function getTribeLeaderboard() {
 		.where(sql`${userProgress.tribeId} IS NOT NULL`)
 
 	// 🧩 Get all base tribes
-	const tribeBase = await db
+	const tribeBase = await neonDb
 		.select({
 			tribeId: tribes.id,
 			tribeEngName: tribes.engName,
@@ -1008,7 +1008,7 @@ export type EventsFilter = {
 // 		? sql`${toStr}::date::timestamp + interval '1 day' - interval '1 millisecond'`
 // 		: undefined
 
-// 	return db
+// 	return neonDb
 // 		.select({
 // 			id: events.id,
 // 			name: events.name,
@@ -1032,38 +1032,38 @@ export type EventsFilter = {
 // }
 
 export async function getAllHebrewStories(courseId?: number) {
-	return db.query.hebrewStories.findMany({
+	return neonDb.query.hebrewStories.findMany({
 		where: sql`${courseId} = ANY(${hebrewStories.courseId})`,
 		orderBy: asc(hebrewStories.order),
 	})
 }
 
 export async function getHebrewStory(storyId: number) {
-	return db.query.hebrewStories.findFirst({
+	return neonDb.query.hebrewStories.findFirst({
 		where: eq(hebrewStories.id, storyId),
 	})
 }
 
 export async function getAllEnglishStories() {
-	return db.query.englishStories.findMany({
+	return neonDb.query.englishStories.findMany({
 		orderBy: asc(englishStories.order),
 	})
 }
 
 export async function getEnglishStory(storyId: number) {
-	return db.query.englishStories.findFirst({
+	return neonDb.query.englishStories.findFirst({
 		where: eq(englishStories.id, storyId),
 	})
 }
 
 export async function getGreekLessonScript(lessonScriptId: number) {
-	return db.query.greekLessonScripts.findFirst({
+	return neonDb.query.greekLessonScripts.findFirst({
 		where: eq(greekLessonScripts.id, lessonScriptId),
 	})
 }
 
 export async function getAllGreekLessonScripts(courseId?: number) {
-	const base = db
+	const base = neonDb
 		.select({
 			id: greekLessonScripts.id,
 			courseId: greekLessonScripts.courseId,
@@ -1089,7 +1089,7 @@ export async function getAllGreekLessonScripts(courseId?: number) {
 }
 
 export async function getUserStudyGroups(userId: string) {
-	return await db.query.studyGroupMembers.findMany({
+	return await neonDb.query.studyGroupMembers.findMany({
 		where: eq(studyGroupMembers.userId, userId),
 		with: {
 			studyGroup: true,
@@ -1106,7 +1106,7 @@ type ExtendedUser = {
 }
 
 export async function getStudyGroupWithMessages(studyGroupId: number) {
-	const group = await db.query.studyGroups.findFirst({
+	const group = await neonDb.query.studyGroups.findFirst({
 		where: eq(studyGroups.id, studyGroupId),
 		with: {
 			teacher: true,
@@ -1125,7 +1125,7 @@ export async function getStudyGroupWithMessages(studyGroupId: number) {
 	if (memberIds.length === 0) return group
 
 	// ✅ Fetch progress info joined to lessons & userProgress (for image fallback)
-	const progressRows = await db
+	const progressRows = await neonDb
 		.select({
 			userId: userCourseProgress.userId,
 			lastSeen: userCourseProgress.lastSeen,
@@ -1163,7 +1163,7 @@ export async function getStudyGroupWithMessages(studyGroupId: number) {
 
 export async function getUserStudyGroupsWithTeaching(userId: string) {
 	// Groups where the user is the teacher
-	const teachingGroups = await db.query.studyGroups.findMany({
+	const teachingGroups = await neonDb.query.studyGroups.findMany({
 		where: eq(studyGroups.teacherId, userId),
 		columns: {
 			id: true,
@@ -1178,7 +1178,7 @@ export async function getUserStudyGroupsWithTeaching(userId: string) {
 	})
 
 	// Groups where the user is a student
-	const memberGroups = await db.query.studyGroupMembers.findMany({
+	const memberGroups = await neonDb.query.studyGroupMembers.findMany({
 		where: eq(studyGroupMembers.userId, userId),
 		with: {
 			studyGroup: {
@@ -1233,7 +1233,7 @@ export async function getUserStudyGroupsWithTeaching(userId: string) {
 
 export async function getStudyGroupWithCourses(studyGroupId: number) {
 	// 1️⃣ Get base group with teacher and members
-	const group = await db.query.studyGroups.findFirst({
+	const group = await neonDb.query.studyGroups.findFirst({
 		where: eq(studyGroups.id, studyGroupId),
 		with: {
 			teacher: true,
@@ -1244,7 +1244,7 @@ export async function getStudyGroupWithCourses(studyGroupId: number) {
 	if (!group) return null
 
 	// 3️⃣ Add available courses (currently all courses)
-	const availableCourses = await db.query.courses.findMany({
+	const availableCourses = await neonDb.query.courses.findMany({
 		orderBy: (courses, { asc }) => [asc(courses.id)],
 		columns: {
 			id: true,

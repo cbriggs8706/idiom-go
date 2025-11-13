@@ -10,7 +10,11 @@ import ReactPlayer from 'react-player/youtube'
 
 import { reduceHearts } from '@/actions/user-progress'
 import { useHeartsModal } from '@/store/use-hearts-modal'
-import { challengeOptions, challenges, userSubscription } from '@/db/schema'
+import {
+	challengeOptions,
+	challenges,
+	userSubscription,
+} from '@/db/neon/schema'
 import { usePracticeModal } from '@/store/use-practice-modal'
 import { upsertChallengeProgress } from '@/actions/challenge-progress'
 

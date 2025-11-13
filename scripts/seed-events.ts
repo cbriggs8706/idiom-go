@@ -1,7 +1,7 @@
 // scripts/seed-events.ts
 import 'dotenv/config'
-import db from '@/db/drizzle'
-import { events } from '@/db/schema'
+import { neonDb } from '@/db/neon/client'
+import { events } from '@/db/neon/schema'
 import { parse } from 'date-fns'
 
 // Paste your JSON here (or import from a file)
@@ -1643,7 +1643,7 @@ const data: InsertEvent[] = raw.map(({ startTime, ...rest }) => ({
 }))
 
 async function seed() {
-	await db.insert(events).values(data)
+	await neonDb.insert(events).values(data)
 	console.log(`✅ Seeded ${data.length} events`)
 }
 

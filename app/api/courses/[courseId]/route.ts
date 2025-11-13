@@ -1,8 +1,8 @@
 import { eq } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
 
-import db from '@/db/drizzle'
-import { courses } from '@/db/schema'
+import { neonDb } from '@/db/neon/client'
+import { courses } from '@/db/neon/schema'
 import { isAdmin } from '@/lib/admin'
 
 // 🔧 Helper to safely parse ID from route params
@@ -25,7 +25,7 @@ export const GET = async (
 	const id = parseId(params.courseId)
 	if (!id) return new NextResponse('Invalid course ID', { status: 400 })
 
-	const data = await db.query.courses.findFirst({
+	const data = await neonDb.query.courses.findFirst({
 		where: eq(courses.id, id),
 	})
 
@@ -53,7 +53,7 @@ export const PUT = async (
 		return new NextResponse('Invalid JSON', { status: 400 })
 	}
 
-	const data = await db
+	const data = await neonDb
 		.update(courses)
 		.set({ ...body })
 		.where(eq(courses.id, id))
@@ -76,7 +76,10 @@ export const DELETE = async (
 	const id = parseId(params.courseId)
 	if (!id) return new NextResponse('Invalid course ID', { status: 400 })
 
-	const data = await db.delete(courses).where(eq(courses.id, id)).returning()
+	const data = await neonDb
+		.delete(courses)
+		.where(eq(courses.id, id))
+		.returning()
 
 	if (!data.length) return new NextResponse('Course not found', { status: 404 })
 

@@ -1,7 +1,7 @@
 'use server'
 
-import db from '@/db/drizzle'
-import { studyGroupSchedule, studyGroupScheduleLessons } from '@/db/schema'
+import { neonDb } from '@/db/neon/client'
+import { studyGroupSchedule, studyGroupScheduleLessons } from '@/db/neon/schema'
 import { eq } from 'drizzle-orm'
 
 // Create or update a schedule session
@@ -24,7 +24,7 @@ export async function saveStudyGroupSession({
 }) {
 	if (sessionId) {
 		// Update existing
-		await db
+		await neonDb
 			.update(studyGroupSchedule)
 			.set({
 				classDate: new Date(classDate),
@@ -35,11 +35,11 @@ export async function saveStudyGroupSession({
 			.where(eq(studyGroupSchedule.id, sessionId))
 
 		// Reset lessons
-		await db
+		await neonDb
 			.delete(studyGroupScheduleLessons)
 			.where(eq(studyGroupScheduleLessons.scheduleId, sessionId))
 		if (lessons.length) {
-			await db.insert(studyGroupScheduleLessons).values(
+			await neonDb.insert(studyGroupScheduleLessons).values(
 				lessons.map((lessonId) => ({
 					scheduleId: sessionId,
 					lessonId,
@@ -48,7 +48,7 @@ export async function saveStudyGroupSession({
 		}
 	} else {
 		// Insert new
-		const [session] = await db
+		const [session] = await neonDb
 			.insert(studyGroupSchedule)
 			.values({
 				studyGroupId,
@@ -60,7 +60,7 @@ export async function saveStudyGroupSession({
 			.returning({ id: studyGroupSchedule.id })
 
 		if (lessons.length) {
-			await db.insert(studyGroupScheduleLessons).values(
+			await neonDb.insert(studyGroupScheduleLessons).values(
 				lessons.map((lessonId) => ({
 					scheduleId: session.id,
 					lessonId,

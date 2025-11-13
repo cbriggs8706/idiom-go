@@ -4,7 +4,7 @@ import 'dotenv/config'
 import { writeFile } from 'fs/promises'
 import { drizzle } from 'drizzle-orm/neon-http'
 import { neon } from '@neondatabase/serverless'
-import * as schema from '../db/schema'
+import * as schema from '../db/neon/schema'
 
 const sql = neon(process.env.DATABASE_URL!) as any
 const db = drizzle(sql, { schema })

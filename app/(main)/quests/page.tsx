@@ -13,9 +13,9 @@ import {
 import { Progress } from '@/components/ui/progress'
 // import { Promo } from '@/components/promo'
 import { quests } from '@/constants'
-import { challengeProgress, units } from '@/db/schema'
+import { challengeProgress, units } from '@/db/neon/schema'
 import { getUserId } from '@/lib/auth'
-import db from '@/db/drizzle'
+import { neonDb } from '@/db/neon/client'
 import { eq } from 'drizzle-orm'
 
 const QuestsPage = async () => {
@@ -42,7 +42,7 @@ const QuestsPage = async () => {
 
 	const isPro = !!userSubscription?.isActive
 
-	const userUnitProgress = await db.query.units.findMany({
+	const userUnitProgress = await neonDb.query.units.findMany({
 		where: eq(units.courseId, courseId),
 		orderBy: (units, { asc }) => [asc(units.order)],
 		with: {

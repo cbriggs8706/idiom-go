@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
-import db from '@/db/drizzle'
+import { neonDb } from '@/db/neon/client'
 import { isAdmin } from '@/lib/admin'
-import { grammarLessons } from '@/db/schema'
+import { grammarLessons } from '@/db/neon/schema'
 import { asc, desc, sql, inArray } from 'drizzle-orm'
 
 export const GET = async (req: Request) => {
@@ -46,7 +46,7 @@ export const GET = async (req: Request) => {
 		filters.length > 0 ? sql.join(filters, sql` AND `) : undefined
 
 	// Query
-	const rows = await db.query.grammarLessons.findMany({
+	const rows = await neonDb.query.grammarLessons.findMany({
 		where: whereClause,
 		orderBy: sortDirection(sortColumn),
 		limit: filter.id ? undefined : perPage,
@@ -54,7 +54,7 @@ export const GET = async (req: Request) => {
 	})
 
 	// Count
-	const [{ count }] = await db
+	const [{ count }] = await neonDb
 		.select({ count: sql<number>`count(*)` })
 		.from(grammarLessons)
 		.where(whereClause ?? sql`TRUE`)
@@ -72,7 +72,7 @@ export const POST = async (req: Request) => {
 
 	const body = await req.json()
 
-	const data = await db.insert(grammarLessons).values(body).returning()
+	const data = await neonDb.insert(grammarLessons).values(body).returning()
 
 	return NextResponse.json(data[0])
 }

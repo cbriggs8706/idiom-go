@@ -8,9 +8,9 @@ import {
 	getTribeMembers,
 } from '@/db/queries'
 import HebrewUserDashboard from '@/components/hebrew/hebrew-dashboard'
-import db from '@/db/drizzle'
+import { neonDb } from '@/db/neon/client'
 import { eq } from 'drizzle-orm'
-import { challengeProgress, units } from '@/db/schema'
+import { challengeProgress, units } from '@/db/neon/schema'
 
 const Dashboard = async () => {
 	const [userProgress, allCourseProgress] = await Promise.all([
@@ -34,7 +34,7 @@ const Dashboard = async () => {
 
 	const courseId = userProgress.activeCourse?.id ?? 6
 
-	const userUnitProgress = await db.query.units.findMany({
+	const userUnitProgress = await neonDb.query.units.findMany({
 		where: eq(units.courseId, courseId),
 		orderBy: (units, { asc }) => [asc(units.order)],
 		with: {

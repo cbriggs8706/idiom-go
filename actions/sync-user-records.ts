@@ -1,6 +1,6 @@
 'use server'
 
-import db from '@/db/drizzle'
+import { neonDb } from '@/db/neon/client'
 import {
 	users,
 	userProgress,
@@ -11,7 +11,7 @@ import {
 	houseMembers,
 	studyGroupMembers,
 	userSubscription,
-} from '@/db/schema'
+} from '@/db/neon/schema'
 import { eq } from 'drizzle-orm'
 
 export async function syncUserRecords({
@@ -30,11 +30,11 @@ export async function syncUserRecords({
 	console.log(`🔍 Checking for existing userProgress by email: ${email}`)
 
 	// 1️⃣ Ensure a base users record exists (NextAuth → Google ID)
-	const existingUser = await db.query.users.findFirst({
+	const existingUser = await neonDb.query.users.findFirst({
 		where: eq(users.id, newUserId),
 	})
 	if (!existingUser) {
-		await db
+		await neonDb
 			.insert(users)
 			.values({
 				id: newUserId,
@@ -48,13 +48,13 @@ export async function syncUserRecords({
 	}
 
 	// 2️⃣ Find the old progress record (by email)
-	const oldProgress = await db.query.userProgress.findFirst({
+	const oldProgress = await neonDb.query.userProgress.findFirst({
 		where: eq(userProgress.email, email),
 	})
 
 	// 🆕 No existing progress → create fresh record
 	if (!oldProgress) {
-		await db.insert(userProgress).values({
+		await neonDb.insert(userProgress).values({
 			userId: newUserId,
 			email,
 			userName: userName || 'User',
@@ -68,7 +68,7 @@ export async function syncUserRecords({
 	}
 
 	// 3️⃣ If new userId already has a record, skip duplication
-	const alreadyExists = await db.query.userProgress.findFirst({
+	const alreadyExists = await neonDb.query.userProgress.findFirst({
 		where: eq(userProgress.userId, newUserId),
 	})
 	if (alreadyExists) {
@@ -77,7 +77,7 @@ export async function syncUserRecords({
 	}
 
 	// 4️⃣ Duplicate user_progress under new ID
-	await db.insert(userProgress).values({
+	await neonDb.insert(userProgress).values({
 		userId: newUserId,
 		email,
 		userName: oldProgress.userName || userName || 'User',
@@ -108,7 +108,7 @@ export async function syncUserRecords({
 
 	for (const { table, column } of tablesToDuplicate) {
 		try {
-			const oldRows = await db
+			const oldRows = await neonDb
 				.select()
 				.from(table)
 				.where(eq(column, oldProgress.userId))
@@ -118,7 +118,7 @@ export async function syncUserRecords({
 					id: undefined, // reset PK
 					userId: newUserId,
 				}))
-				await db.insert(table).values(duplicates).onConflictDoNothing()
+				await neonDb.insert(table).values(duplicates).onConflictDoNothing()
 				console.log(`📦 Duplicated ${duplicates.length} row(s) from table`)
 			}
 		} catch (err) {

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import db from '@/db/drizzle'
-import { lessons } from '@/db/schema'
+import { neonDb } from '@/db/neon/client'
+import { lessons } from '@/db/neon/schema'
 import { asc, desc, eq, sql } from 'drizzle-orm'
 import { isAdmin } from '@/lib/admin'
 
@@ -45,14 +45,14 @@ export const GET = async (req: Request) => {
 	}
 
 	// Query
-	const rows = await db.query.lessons.findMany({
+	const rows = await neonDb.query.lessons.findMany({
 		where: whereClause,
 		orderBy: sortDirection(sortColumn),
 		limit: perPage,
 		offset,
 	})
 
-	const [{ count }] = await db
+	const [{ count }] = await neonDb
 		.select({ count: sql<number>`count(*)` })
 		.from(lessons)
 		.where(whereClause ?? sql`TRUE`)
@@ -83,7 +83,7 @@ export const POST = async (req: Request) => {
 		order: Number(body.order),
 	}
 
-	const [created] = await db.insert(lessons).values(payload).returning()
+	const [created] = await neonDb.insert(lessons).values(payload).returning()
 	// RA requires an `id` field in the response
 	return NextResponse.json(created, { status: 201 })
 }

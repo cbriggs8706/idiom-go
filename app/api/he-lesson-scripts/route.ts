@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
-import db from '@/db/drizzle'
+import { neonDb } from '@/db/neon/client'
 import { isAdmin } from '@/lib/admin'
-import { hebrewLessonScripts } from '@/db/schema'
+import { hebrewLessonScripts } from '@/db/neon/schema'
 import { asc, desc, sql, inArray } from 'drizzle-orm'
 
 export const GET = async (req: Request) => {
@@ -47,7 +47,7 @@ export const GET = async (req: Request) => {
 		filters.length > 0 ? sql.join(filters, sql` AND `) : undefined
 
 	// Query
-	const rows = await db.query.hebrewLessonScripts.findMany({
+	const rows = await neonDb.query.hebrewLessonScripts.findMany({
 		where: whereClause,
 		orderBy: sortDirection(sortColumn),
 		limit: filter.id ? undefined : perPage,
@@ -55,7 +55,7 @@ export const GET = async (req: Request) => {
 	})
 
 	// Count
-	const [{ count }] = await db
+	const [{ count }] = await neonDb
 		.select({ count: sql<number>`count(*)` })
 		.from(hebrewLessonScripts)
 		.where(whereClause ?? sql`TRUE`)
@@ -79,7 +79,7 @@ export const POST = async (req: Request) => {
 
 	const body = await req.json()
 
-	const data = await db.insert(hebrewLessonScripts).values(body).returning()
+	const data = await neonDb.insert(hebrewLessonScripts).values(body).returning()
 
 	return NextResponse.json(data[0])
 }

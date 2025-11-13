@@ -1,5 +1,5 @@
 import { arrayOverlaps, sql } from 'drizzle-orm'
-import { hebrewWords, hebrewWordForms } from '@/db/schema'
+import { hebrewWords, hebrewWordForms } from '@/db/neon/schema'
 import type { InferSelectModel } from 'drizzle-orm'
 import type { HebrewVocab } from '@/lib/vocab'
 import db from './drizzle'

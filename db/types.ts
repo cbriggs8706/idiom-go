@@ -4,7 +4,7 @@ import {
 	hebrewPrayerLine,
 	hebrewMusicLibrary,
 	hebrewMusicLine,
-} from '@/db/schema'
+} from '@/db/neon/schema'
 
 export type HebrewPrayer = InferSelectModel<typeof hebrewPrayerLibrary>
 export type HebrewPrayerLine = InferSelectModel<typeof hebrewPrayerLine>

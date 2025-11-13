@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import db from '@/db/drizzle'
-import { challenges } from '@/db/schema'
+import { neonDb } from '@/db/neon/client'
+import { challenges } from '@/db/neon/schema'
 import { asc, desc, sql, inArray } from 'drizzle-orm'
 import { isAdmin } from '@/lib/admin'
 
@@ -70,7 +70,7 @@ export const GET = async (req: Request) => {
 	}
 
 	// 📋 Query data
-	const rows = await db.query.challenges.findMany({
+	const rows = await neonDb.query.challenges.findMany({
 		where: whereClause,
 		orderBy: sortDirection(sortColumn),
 		limit: filter.id ? undefined : perPage, // don't paginate getMany calls
@@ -78,7 +78,7 @@ export const GET = async (req: Request) => {
 	})
 
 	// 📊 Total count (for pagination header)
-	const [{ count }] = await db
+	const [{ count }] = await neonDb
 		.select({ count: sql<number>`count(*)` })
 		.from(challenges)
 		.where(whereClause)

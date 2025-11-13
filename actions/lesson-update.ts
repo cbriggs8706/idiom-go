@@ -1,14 +1,14 @@
 'use server'
 
 import { eq } from 'drizzle-orm'
-import db from '@/db/drizzle'
 import {
 	userProgress,
 	userCourseProgress,
 	challengeProgress,
 	units,
-} from '@/db/schema'
+} from '@/db/neon/schema'
 import { getSession } from '@/lib/auth'
+import { neonDb } from '@/db/neon/client'
 
 export const updateActiveLesson = async (lessonId?: number | null) => {
 	const session = await getSession()
@@ -16,12 +16,12 @@ export const updateActiveLesson = async (lessonId?: number | null) => {
 
 	if (!userId) return
 
-	const user = await db.query.userProgress.findFirst({
+	const user = await neonDb.query.userProgress.findFirst({
 		where: eq(userProgress.userId, userId),
 	})
 	if (!user?.activeCourseId) return
 
-	await db
+	await neonDb
 		.insert(userCourseProgress)
 		.values({
 			userId,

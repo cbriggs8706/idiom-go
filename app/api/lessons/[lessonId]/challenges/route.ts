@@ -1,6 +1,6 @@
 // app/api/lessons/[lessonId]/challenges/route.ts
-import db from '@/db/drizzle'
-import { challenges, challengeOptions } from '@/db/schema'
+import { neonDb } from '@/db/neon/client'
+import { challenges, challengeOptions } from '@/db/neon/schema'
 import { eq, and, ne, inArray } from 'drizzle-orm'
 
 export async function GET(
@@ -10,7 +10,7 @@ export async function GET(
 	const lessonId = Number(params.lessonId)
 
 	// 1️⃣ Get all non-WATCH challenges for the lesson
-	const rows = await db
+	const rows = await neonDb
 		.select({
 			id: challenges.id,
 			question: challenges.question,
@@ -31,7 +31,7 @@ export async function GET(
 	}
 
 	// 3️⃣ Fetch all options for those challenges
-	const options = await db
+	const options = await neonDb
 		.select()
 		.from(challengeOptions)
 		.where(inArray(challengeOptions.challengeId, challengeIds))

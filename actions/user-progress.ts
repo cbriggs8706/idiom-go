@@ -5,7 +5,6 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { getSession, getUserId } from '@/lib/auth'
 import { z } from 'zod'
-import db from '@/db/drizzle'
 import { POINTS_TO_REFILL } from '@/constants'
 import {
 	getCourseById,
@@ -18,7 +17,8 @@ import {
 	tribes,
 	userProgress,
 	userCourseProgress,
-} from '@/db/schema'
+} from '@/db/neon/schema'
+import { neonDb } from '@/db/neon/client'
 
 // -----------------------------
 // 🔧 Helpers
@@ -72,7 +72,7 @@ export const upsertUserProgress = async (courseId: number) => {
 				: user?.image || '/mascot.svg'
 
 		// 1️⃣ Update global user_progress
-		await db
+		await neonDb
 			.update(userProgress)
 			.set({
 				activeCourseId: courseId,
@@ -82,7 +82,7 @@ export const upsertUserProgress = async (courseId: number) => {
 			.where(eq(userProgress.userId, userId!))
 
 		// 2️⃣ Ensure user_course_progress exists
-		await db
+		await neonDb
 			.insert(userCourseProgress)
 			.values({
 				userId: userId!,
@@ -120,26 +120,27 @@ export const reduceHearts = async (challengeId: number) => {
 	const currentUserProgress = await getUserProgress()
 	const userSubscription = await getUserSubscription()
 
-	const challenge = await db.query.challenges.findFirst({
+	const challenge = await neonDb.query.challenges.findFirst({
 		where: eq(challenges.id, challengeId),
 	})
 
 	if (!challenge) throw new Error('Challenge not found')
 	const lessonId = challenge.lessonId
 
-	const existingChallengeProgress = await db.query.challengeProgress.findFirst({
-		where: and(
-			eq(challengeProgress.userId, userId!),
-			eq(challengeProgress.challengeId, challengeId)
-		),
-	})
+	const existingChallengeProgress =
+		await neonDb.query.challengeProgress.findFirst({
+			where: and(
+				eq(challengeProgress.userId, userId!),
+				eq(challengeProgress.challengeId, challengeId)
+			),
+		})
 
 	if (existingChallengeProgress) return { error: 'practice' }
 	if (!currentUserProgress) throw new Error('User progress not found')
 	if (userSubscription?.isActive) return { error: 'subscription' }
 	if (currentUserProgress.hearts === 0) return { error: 'hearts' }
 
-	await db
+	await neonDb
 		.update(userProgress)
 		.set({ hearts: Math.max(currentUserProgress.hearts - 1, 0) })
 		.where(eq(userProgress.userId, userId!))
@@ -170,7 +171,7 @@ export const refillHearts = async () => {
 	if (currentUserProgress.points < POINTS_TO_REFILL)
 		throw new Error('Not enough points')
 
-	await db
+	await neonDb
 		.update(userProgress)
 		.set({
 			hearts: 5,
@@ -209,10 +210,10 @@ const updateUserSchema = z.object({
 type UpdatedUserProfile = {
 	userId: string
 	userName: string
-	hebrewName: string
-	spanishName: string
-	userImageSrc: string
-	hebrewImageSrc: string
+	hebrewName: string | null
+	spanishName: string | null
+	userImageSrc: string | null
+	hebrewImageSrc: string | null
 	points: number
 	hearts: number
 	activeCourseId: number | null
@@ -243,7 +244,7 @@ export const updateUserProfile = async (data: {
 	const currentUserProgress = await getUserProgress()
 	if (!currentUserProgress) throw new Error('User progress not found')
 
-	await db
+	await neonDb
 		.update(userProgress)
 		.set({
 			...(parsed.data.userName && { userName: parsed.data.userName }),
@@ -259,7 +260,7 @@ export const updateUserProfile = async (data: {
 		})
 		.where(eq(userProgress.userId, userId!))
 
-	const [updatedUser] = await db
+	const [updatedUser] = await neonDb
 		.select({
 			userId: userProgress.userId,
 			userName: userProgress.userName,
@@ -298,12 +299,12 @@ export const exchangePointsForTribe = async () => {
 	if (!currentUserProgress.tribeId) throw new Error('No tribe assigned')
 	if (currentUserProgress.points < 100) throw new Error('Not enough points')
 
-	await db
+	await neonDb
 		.update(userProgress)
 		.set({ points: currentUserProgress.points - 100 })
 		.where(eq(userProgress.userId, userId!))
 
-	await db
+	await neonDb
 		.update(tribes)
 		.set({ points: sql`${tribes.points} + 1` })
 		.where(eq(tribes.id, currentUserProgress.tribeId))

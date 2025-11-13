@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
-import db from '@/db/drizzle'
-import { challenges } from '@/db/schema'
+import { neonDb } from '@/db/neon/client'
+import { challenges } from '@/db/neon/schema'
 import { isAdmin } from '@/lib/admin'
 
 // ✅ Helper to safely parse numeric IDs
@@ -25,7 +25,7 @@ export const GET = async (
 	const id = parseId(params.challengeId)
 	if (!id) return new NextResponse('Invalid ID', { status: 400 })
 
-	const data = await db.query.challenges.findFirst({
+	const data = await neonDb.query.challenges.findFirst({
 		where: eq(challenges.id, id),
 	})
 
@@ -53,7 +53,7 @@ export const PUT = async (
 		return new NextResponse('Invalid JSON', { status: 400 })
 	}
 
-	const data = await db
+	const data = await neonDb
 		.update(challenges)
 		.set({ ...body })
 		.where(eq(challenges.id, id))
@@ -76,7 +76,7 @@ export const DELETE = async (
 	const id = parseId(params.challengeId)
 	if (!id) return new NextResponse('Invalid ID', { status: 400 })
 
-	const data = await db
+	const data = await neonDb
 		.delete(challenges)
 		.where(eq(challenges.id, id))
 		.returning()

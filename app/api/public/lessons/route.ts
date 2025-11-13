@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import db from '@/db/drizzle'
-import { lessons, units } from '@/db/schema'
+import { neonDb } from '@/db/neon/client'
+import { lessons, units } from '@/db/neon/schema'
 import { asc, desc, eq, sql, and } from 'drizzle-orm'
 import { isAdmin } from '@/lib/admin'
 
@@ -51,7 +51,7 @@ export const GET = async (req: Request) => {
 
 		if (courseId) {
 			// ✅ If courseId is specified, join lessons → units
-			rows = await db
+			rows = await neonDb
 				.select({
 					id: lessons.id,
 					title: lessons.title,
@@ -66,7 +66,7 @@ export const GET = async (req: Request) => {
 				.orderBy(asc(units.order), asc(lessons.order))
 		} else {
 			// ✅ Generic lesson list (admin or public)
-			rows = await db.query.lessons.findMany({
+			rows = await neonDb.query.lessons.findMany({
 				where: whereClause,
 				orderBy: sortDirection(sortColumn),
 				limit: perPage,
@@ -74,7 +74,7 @@ export const GET = async (req: Request) => {
 			})
 		}
 
-		const [{ count }] = await db
+		const [{ count }] = await neonDb
 			.select({ count: sql<number>`count(*)` })
 			.from(lessons)
 			.where(whereClause ?? sql`TRUE`)
@@ -108,6 +108,6 @@ export const POST = async (req: Request) => {
 		order: Number(body.order),
 	}
 
-	const [created] = await db.insert(lessons).values(payload).returning()
+	const [created] = await neonDb.insert(lessons).values(payload).returning()
 	return NextResponse.json(created, { status: 201 })
 }

@@ -3,8 +3,8 @@ import type { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { compare } from 'bcryptjs'
-import db from '@/db/drizzle'
-import { users } from '@/db/schema'
+import { neonDb } from '@/db/neon/client'
+import { users } from '@/db/neon/schema'
 import { eq } from 'drizzle-orm'
 import { syncUserRecords } from '@/actions/sync-user-records'
 
@@ -23,7 +23,7 @@ export const options: NextAuthOptions = {
 			async authorize(credentials) {
 				if (!credentials?.username || !credentials?.password) return null
 
-				const user = await db.query.users.findFirst({
+				const user = await neonDb.query.users.findFirst({
 					where: (u, { or, eq }) =>
 						or(
 							eq(u.username, credentials.username),
@@ -46,7 +46,7 @@ export const options: NextAuthOptions = {
 		async jwt({ token, user, account }) {
 			// Case 1️⃣: OAuth (Google) — ensure local DB id exists
 			if (account?.provider === 'google' && user?.email) {
-				let dbUser = await db.query.users.findFirst({
+				let dbUser = await neonDb.query.users.findFirst({
 					where: eq(users.email, user.email),
 				})
 
@@ -59,7 +59,7 @@ export const options: NextAuthOptions = {
 						image: user.image || undefined,
 					})
 
-					dbUser = await db.query.users.findFirst({
+					dbUser = await neonDb.query.users.findFirst({
 						where: eq(users.email, user.email),
 					})
 				}

@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { UnitBanner } from './unit-banner'
 import { LessonButton } from './lesson-button'
-import { lessons as lessonsTbl, units } from '@/db/schema'
+import { lessons as lessonsTbl, units } from '@/db/neon/schema'
 
 type Props = {
 	id: number

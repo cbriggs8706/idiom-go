@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import db from '@/db/drizzle'
+import { neonDb } from '@/db/neon/client'
 import awbHebrewVocab from '@/lib/data/vocab/awbVocab.json'
 // import awaGreekVocab from '@/lib/data/vocab/greek-vocab.json'
 
@@ -27,7 +27,7 @@ export const POST = async (req: Request) => {
 		type: ChallengeType
 	}
 
-	const lesson = await db.query.lessons.findFirst({
+	const lesson = await neonDb.query.lessons.findFirst({
 		where: (l, { eq }) => eq(l.id, lessonId),
 	})
 

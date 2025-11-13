@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { challengeOptions, challenges } from '@/db/schema'
+import { challengeOptions, challenges } from '@/db/neon/schema'
 
 import { Card } from './card'
 

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
-import db from '@/db/drizzle'
+import { neonDb } from '@/db/neon/client'
 import { isAdmin } from '@/lib/admin'
-import { courses } from '@/db/schema'
+import { courses } from '@/db/neon/schema'
 import { asc, desc, sql, inArray } from 'drizzle-orm'
 
 export const GET = async (req: Request) => {
@@ -44,14 +44,14 @@ export const GET = async (req: Request) => {
 		filters.length > 0 ? sql.join(filters, sql` AND `) : undefined
 
 	// Query
-	const rows = await db.query.courses.findMany({
+	const rows = await neonDb.query.courses.findMany({
 		where: whereClause,
 		orderBy: sortDirection(sortColumn),
 		limit: filter.id ? undefined : perPage,
 		offset: filter.id ? undefined : offset,
 	})
 
-	const [{ count }] = await db
+	const [{ count }] = await neonDb
 		.select({ count: sql<number>`count(*)` })
 		.from(courses)
 		.where(whereClause ?? sql`TRUE`)
@@ -68,6 +68,6 @@ export const POST = async (req: Request) => {
 	if (!isAdmin()) return new NextResponse('Unauthorized', { status: 401 })
 
 	const body = await req.json()
-	const data = await db.insert(courses).values(body).returning()
+	const data = await neonDb.insert(courses).values(body).returning()
 	return NextResponse.json(data[0])
 }

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import db from '@/db/drizzle'
-import { lessons, units } from '@/db/schema'
+import { neonDb } from '@/db/neon/client'
+import { lessons, units } from '@/db/neon/schema'
 import { eq, asc } from 'drizzle-orm'
 import { isAdmin } from '@/lib/admin' // ✅ add this import
 
@@ -24,7 +24,7 @@ export async function GET(
 
 	try {
 		// 📚 Join lessons → units, filter by courseId
-		const results = await db
+		const results = await neonDb
 			.select({
 				id: lessons.id,
 				title: lessons.title,

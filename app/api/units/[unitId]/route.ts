@@ -1,8 +1,8 @@
 import { eq } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
 
-import db from '@/db/drizzle'
-import { units } from '@/db/schema'
+import { neonDb } from '@/db/neon/client'
+import { units } from '@/db/neon/schema'
 import { isAdmin } from '@/lib/admin'
 
 export const GET = async (
@@ -14,7 +14,7 @@ export const GET = async (
 	}
 	const id = Number(params.challengeOptionId)
 
-	const data = await db.query.units.findFirst({
+	const data = await neonDb.query.units.findFirst({
 		where: eq(units.id, id),
 	})
 
@@ -30,7 +30,7 @@ export const PUT = async (
 	}
 
 	const body = await req.json()
-	const data = await db
+	const data = await neonDb
 		.update(units)
 		.set({
 			...body,
@@ -49,7 +49,7 @@ export const DELETE = async (
 		return new NextResponse('Unauthorized', { status: 403 })
 	}
 
-	const data = await db
+	const data = await neonDb
 		.delete(units)
 		.where(eq(units.id, params.unitId))
 		.returning()

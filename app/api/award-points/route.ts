@@ -1,5 +1,5 @@
-import db from '@/db/drizzle'
-import { userCourseProgress } from '@/db/schema'
+import { neonDb } from '@/db/neon/client'
+import { userCourseProgress } from '@/db/neon/schema'
 import { eq, sql } from 'drizzle-orm'
 
 type ProgressPayload = {
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
 		}
 
 		// ✅ Authenticated user path
-		await db
+		await neonDb
 			.insert(userCourseProgress)
 			.values({
 				userId: userId!,

@@ -1,7 +1,7 @@
 // app/api/study-groups/[id]/lessons/route.ts
 import { NextResponse } from 'next/server'
-import db from '@/db/drizzle'
-import { lessons, studyGroups, units } from '@/db/schema'
+import { neonDb } from '@/db/neon/client'
+import { lessons, studyGroups, units } from '@/db/neon/schema'
 import { eq, asc } from 'drizzle-orm'
 
 export async function GET(req: Request, { params }: any) {
@@ -9,7 +9,7 @@ export async function GET(req: Request, { params }: any) {
 		const groupId = Number(params.id)
 
 		// Example: lessons linked by shared course or units within same course
-		const group = await db.query.studyGroups.findFirst({
+		const group = await neonDb.query.studyGroups.findFirst({
 			where: eq(studyGroups.id, groupId),
 			with: {
 				teacher: true,
@@ -20,7 +20,7 @@ export async function GET(req: Request, { params }: any) {
 		}
 
 		// Fetch all lessons from that teacher’s active course
-		const allLessons = await db.query.lessons.findMany({
+		const allLessons = await neonDb.query.lessons.findMany({
 			orderBy: (l, { asc }) => [asc(l.order)],
 			with: {
 				unit: true,

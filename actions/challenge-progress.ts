@@ -5,7 +5,7 @@ import { options } from '@/app/api/auth/[...nextauth]/options'
 import { and, eq, sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 
-import db from '@/db/drizzle'
+import { neonDb } from '@/db/neon/client'
 import { getUserProgress, getUserSubscription } from '@/db/queries'
 import {
 	challengeProgress,
@@ -13,7 +13,7 @@ import {
 	tribes,
 	userProgress,
 	userCourseProgress,
-} from '@/db/schema'
+} from '@/db/neon/schema'
 import { getSession } from '@/lib/auth'
 
 export const upsertChallengeProgress = async (challengeId: number) => {
@@ -28,14 +28,14 @@ export const upsertChallengeProgress = async (challengeId: number) => {
 	const userSubscription = await getUserSubscription()
 	if (!currentUserProgress) throw new Error('User progress not found')
 
-	const challenge = await db.query.challenges.findFirst({
+	const challenge = await neonDb.query.challenges.findFirst({
 		where: eq(challenges.id, challengeId),
 	})
 	if (!challenge) throw new Error('Challenge not found')
 
 	const lessonId = challenge.lessonId
 
-	const existing = await db.query.challengeProgress.findFirst({
+	const existing = await neonDb.query.challengeProgress.findFirst({
 		where: and(
 			eq(challengeProgress.userId, userId),
 			eq(challengeProgress.challengeId, challengeId)
@@ -58,14 +58,14 @@ export const upsertChallengeProgress = async (challengeId: number) => {
 
 	// 🎯 PRACTICE MODE (replay)
 	if (isPractice) {
-		await db
+		await neonDb
 			.update(challengeProgress)
 			.set({ completed: true })
 			.where(eq(challengeProgress.id, existing.id))
 
 		// update per-course stats
 		if (currentUserProgress.activeCourseId) {
-			await db
+			await neonDb
 				.insert(userCourseProgress)
 				.values({
 					userId,
@@ -91,14 +91,14 @@ export const upsertChallengeProgress = async (challengeId: number) => {
 	}
 
 	// 🎯 FIRST-TIME COMPLETION
-	await db.insert(challengeProgress).values({
+	await neonDb.insert(challengeProgress).values({
 		challengeId,
 		userId,
 		completed: true,
 	})
 
 	if (currentUserProgress.activeCourseId) {
-		await db
+		await neonDb
 			.insert(userCourseProgress)
 			.values({
 				userId,
@@ -118,13 +118,13 @@ export const upsertChallengeProgress = async (challengeId: number) => {
 	}
 
 	// ✅ Optionally keep lastSeen fresh globally
-	await db
+	await neonDb
 		.update(userProgress)
 		.set({ lastSeen: new Date() })
 		.where(eq(userProgress.userId, userId))
 
 	// 🧩 Check if entire lesson completed
-	const lessonChallenges = await db.query.challenges.findMany({
+	const lessonChallenges = await neonDb.query.challenges.findMany({
 		where: eq(challenges.lessonId, lessonId),
 		with: {
 			challengeProgress: { where: eq(challengeProgress.userId, userId) },
@@ -138,7 +138,7 @@ export const upsertChallengeProgress = async (challengeId: number) => {
 	)
 
 	if (allCompleted && currentUserProgress.tribeId) {
-		await db
+		await neonDb
 			.update(tribes)
 			.set({ points: sql`${tribes.points} + 1` })
 			.where(eq(tribes.id, currentUserProgress.tribeId))

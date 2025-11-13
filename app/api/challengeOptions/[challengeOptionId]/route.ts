@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
-import db from '@/db/drizzle'
-import { challengeOptions } from '@/db/schema'
+import { neonDb } from '@/db/neon/client'
+import { challengeOptions } from '@/db/neon/schema'
 import { isAdmin } from '@/lib/admin'
 
 // ✅ Type utility
@@ -26,7 +26,7 @@ export const GET = async (req: Request, { params }: Params) => {
 		return new NextResponse('Invalid ID', { status: 400 })
 	}
 
-	const data = await db.query.challengeOptions.findFirst({
+	const data = await neonDb.query.challengeOptions.findFirst({
 		where: eq(challengeOptions.id, id),
 	})
 
@@ -52,7 +52,7 @@ export const PUT = async (req: Request, { params }: Params) => {
 
 	const body = await req.json()
 
-	const data = await db
+	const data = await neonDb
 		.update(challengeOptions)
 		.set({ ...body })
 		.where(eq(challengeOptions.id, id))
@@ -78,7 +78,7 @@ export const DELETE = async (req: Request, { params }: Params) => {
 		return new NextResponse('Invalid ID', { status: 400 })
 	}
 
-	const data = await db
+	const data = await neonDb
 		.delete(challengeOptions)
 		.where(eq(challengeOptions.id, id))
 		.returning()

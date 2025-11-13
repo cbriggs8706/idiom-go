@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
-import db from '@/db/drizzle'
+import { neonDb } from '@/db/neon/client'
 import { isAdmin } from '@/lib/admin'
-import { challengeOptions } from '@/db/schema'
+import { challengeOptions } from '@/db/neon/schema'
 import { asc, desc, sql } from 'drizzle-orm'
 
 export const GET = async (req: Request) => {
@@ -67,7 +67,7 @@ export const GET = async (req: Request) => {
 		filters.length > 0 ? sql.join(filters, sql` AND `) : sql`TRUE`
 
 	// ✅ Fetch paginated rows
-	const rows = await db.query.challengeOptions.findMany({
+	const rows = await neonDb.query.challengeOptions.findMany({
 		where: whereClause,
 		orderBy: sortDirection(sortColumn),
 		limit: perPage,
@@ -75,7 +75,7 @@ export const GET = async (req: Request) => {
 	})
 
 	// ✅ Count total (for React-Admin pagination)
-	const [{ count }] = await db
+	const [{ count }] = await neonDb
 		.select({ count: sql<number>`count(*)` })
 		.from(challengeOptions)
 		.where(whereClause)

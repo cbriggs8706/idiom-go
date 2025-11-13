@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useMemo, useState } from 'react'
-import { lessons as lessonsTbl, units } from '@/db/schema'
+import { lessons as lessonsTbl, units } from '@/db/neon/schema'
 import { EnglishUnitBanner } from './unit-banner'
 import { EnglishLessonButton } from './lesson-button'
 

@@ -6,7 +6,7 @@ import { Quests } from '@/components/quests'
 import { FeedWrapper } from '@/components/feed-wrapper'
 import { UserProgress } from '@/components/user-progress'
 import { StickyWrapper } from '@/components/sticky-wrapper'
-import { lessons, units as unitsSchema } from '@/db/schema'
+import { lessons, units as unitsSchema } from '@/db/neon/schema'
 import {
 	getCourseProgress,
 	getLessonPercentage,

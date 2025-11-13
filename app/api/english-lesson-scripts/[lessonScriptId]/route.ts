@@ -1,8 +1,8 @@
 import { eq } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
 
-import db from '@/db/drizzle'
-import { englishLessonScripts } from '@/db/schema'
+import { neonDb } from '@/db/neon/client'
+import { englishLessonScripts } from '@/db/neon/schema'
 import { isAdmin } from '@/lib/admin'
 
 export const GET = async (
@@ -18,7 +18,7 @@ export const GET = async (
 		return new NextResponse('Unauthorized', { status: 403 })
 	}
 
-	const data = await db.query.englishLessonScripts.findFirst({
+	const data = await neonDb.query.englishLessonScripts.findFirst({
 		where: eq(englishLessonScripts.id, id),
 	})
 
@@ -38,7 +38,7 @@ export const PUT = async (
 	}
 
 	const body = await req.json()
-	const data = await db
+	const data = await neonDb
 		.update(englishLessonScripts)
 		.set({
 			...body,
@@ -61,7 +61,7 @@ export const DELETE = async (
 		return new NextResponse('Unauthorized', { status: 403 })
 	}
 
-	const data = await db
+	const data = await neonDb
 		.delete(englishLessonScripts)
 		.where(eq(englishLessonScripts.id, id))
 		.returning()

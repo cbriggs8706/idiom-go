@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import db from '@/db/drizzle'
-import { lessons } from '@/db/schema'
+import { neonDb } from '@/db/neon/client'
+import { lessons } from '@/db/neon/schema'
 import { inArray } from 'drizzle-orm'
 
 export async function POST(req: Request) {
@@ -9,7 +9,7 @@ export async function POST(req: Request) {
 		return NextResponse.json([], { status: 200 })
 	}
 
-	const data = await db
+	const data = await neonDb
 		.select({ id: lessons.id, title: lessons.title })
 		.from(lessons)
 		.where(inArray(lessons.id, ids))

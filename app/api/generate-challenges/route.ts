@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import db from '@/db/drizzle'
-import { challenges, challengeOptions } from '@/db/schema'
+import { neonDb } from '@/db/neon/client'
+import { challenges, challengeOptions } from '@/db/neon/schema'
 import awbHebrewVocab from '@/lib/data/vocab/awbVocab.json'
 // import awaGreekVocab from '@/lib/data/vocab/greek-vocab.json'
 
@@ -33,7 +33,7 @@ export const POST = async (req: Request) => {
 	}
 
 	// 🔍 STEP 1: Get the lesson title
-	const lesson = await db.query.lessons.findFirst({
+	const lesson = await neonDb.query.lessons.findFirst({
 		where: (l, { eq }) => eq(l.id, lessonId),
 	})
 
@@ -181,7 +181,7 @@ export const POST = async (req: Request) => {
 	// ✅ If challenges were sent from the frontend (edited preview), just save those
 	if (providedChallenges && Array.isArray(providedChallenges)) {
 		for (const [index, ch] of providedChallenges.entries()) {
-			const challenge = await db
+			const challenge = await neonDb
 				.insert(challenges)
 				.values({
 					lessonId,
@@ -199,7 +199,7 @@ export const POST = async (req: Request) => {
 			// Save options exactly as modified
 			await Promise.all(
 				ch.options.map((opt: any) =>
-					db.insert(challengeOptions).values({
+					neonDb.insert(challengeOptions).values({
 						...opt,
 						challengeId,
 					})
@@ -219,7 +219,7 @@ export const POST = async (req: Request) => {
 		// 🏷️ Correctly formatted title
 		const question = `AwB${awbNumber}.${challengeOrder} ${transliteration}`
 
-		const challenge = await db
+		const challenge = await neonDb
 			.insert(challenges)
 			.values({
 				lessonId,
@@ -251,7 +251,7 @@ export const POST = async (req: Request) => {
 		)
 
 		await Promise.all(
-			options.map((opt) => db.insert(challengeOptions).values(opt))
+			options.map((opt) => neonDb.insert(challengeOptions).values(opt))
 		)
 	}
 

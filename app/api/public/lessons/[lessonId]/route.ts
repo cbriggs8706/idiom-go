@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
-import db from '@/db/drizzle'
-import { lessons } from '@/db/schema'
+import { neonDb } from '@/db/neon/client'
+import { lessons } from '@/db/neon/schema'
 
 export async function GET(
 	_req: Request,
@@ -13,7 +13,7 @@ export async function GET(
 			return NextResponse.json({ error: 'Invalid lesson ID' }, { status: 400 })
 		}
 
-		const data = await db.query.lessons.findFirst({
+		const data = await neonDb.query.lessons.findFirst({
 			where: eq(lessons.id, id),
 		})
 

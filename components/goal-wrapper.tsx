@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { lessons, units as unitsSchema } from '@/db/schema'
+import { lessons, units as unitsSchema } from '@/db/neon/schema'
 import { Unit } from '@/app/(main)/learnssss/unit'
 import { HebrewUnit } from '@/app/(main)/he/learn/unit'
 import { EnglishUnit } from '@/app/(main)/en/learn/unit'

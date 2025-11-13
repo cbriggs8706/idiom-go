@@ -2,9 +2,9 @@
 
 import { getServerSession } from 'next-auth'
 import { options } from '@/app/api/auth/[...nextauth]/options'
-import { users, userProgress, tribes } from '@/db/schema'
+import { users, userProgress, tribes } from '@/db/neon/schema'
 import { eq, sql } from 'drizzle-orm'
-import db from '@/db/drizzle'
+import { neonDb } from '@/db/neon/client'
 
 export const updateLastSeen = async () => {
 	// 1️⃣ Get session (Google/Credentials login)
@@ -23,12 +23,12 @@ export const updateLastSeen = async () => {
 	}
 
 	// 3️⃣ Ensure users row exists (for FK integrity)
-	let existingUser = await db.query.users.findFirst({
+	let existingUser = await neonDb.query.users.findFirst({
 		where: eq(users.id, userId),
 	})
 
 	if (!existingUser) {
-		await db
+		await neonDb
 			.insert(users)
 			.values({
 				id: userId,
@@ -40,7 +40,7 @@ export const updateLastSeen = async () => {
 			.onConflictDoNothing()
 
 		// Re-fetch to ensure consistency
-		existingUser = await db.query.users.findFirst({
+		existingUser = await neonDb.query.users.findFirst({
 			where: eq(users.id, userId),
 		})
 
@@ -48,13 +48,13 @@ export const updateLastSeen = async () => {
 	}
 
 	// 4️⃣ Ensure userProgress row exists
-	let currentUser = await db.query.userProgress.findFirst({
+	let currentUser = await neonDb.query.userProgress.findFirst({
 		where: eq(userProgress.userId, userId),
 	})
 
 	if (!currentUser) {
 		console.log('🆕 Creating userProgress record for new user:', userId)
-		await db
+		await neonDb
 			.insert(userProgress)
 			.values({
 				userId,
@@ -66,7 +66,7 @@ export const updateLastSeen = async () => {
 			})
 			.onConflictDoNothing()
 
-		currentUser = await db.query.userProgress.findFirst({
+		currentUser = await neonDb.query.userProgress.findFirst({
 			where: eq(userProgress.userId, userId),
 		})
 	}
@@ -84,7 +84,7 @@ export const updateLastSeen = async () => {
 
 	// 7️⃣ Award tribe points (only once per day)
 	if (isNewDay && currentUser.tribeId !== null) {
-		await db
+		await neonDb
 			.update(tribes)
 			.set({ points: sql`${tribes.points} + 1` })
 			.where(eq(tribes.id, currentUser.tribeId))
@@ -95,7 +95,7 @@ export const updateLastSeen = async () => {
 	}
 
 	// 8️⃣ Always update lastSeen timestamp
-	await db
+	await neonDb
 		.update(userProgress)
 		.set({ lastSeen: now })
 		.where(eq(userProgress.userId, userId))
