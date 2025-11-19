@@ -41,9 +41,69 @@ export default function Home() {
 							</Button>
 						</>
 					) : (
-						<Button size="lg" variant="secondary" className="w-full" asChild>
-							<Link href="/courses">Continue Learning</Link>
-						</Button>
+						<>
+							<Button size="lg" variant="test" className="w-full" asChild>
+								<Link href="/courses">Continue Learning</Link>
+							</Button>
+							<Button size="lg" variant="testOld" className="w-full" asChild>
+								<Link href="/courses">Continue Learning</Link>
+							</Button>
+							<Button size="lg" variant="testStone" className="w-full" asChild>
+								<Link href="/courses">Continue Learning</Link>
+							</Button>
+							<Button
+								size="lg"
+								variant="testScrollBurnt"
+								className="w-full"
+								asChild
+							>
+								<Link href="/courses">Continue Learning</Link>
+							</Button>
+							<Button
+								size="lg"
+								variant="testTorahHandles"
+								className="w-full"
+								asChild
+							>
+								<Link href="/courses">Continue Learning</Link>
+							</Button>
+							<Button size="lg" variant="testDesert" className="w-full" asChild>
+								<Link href="/courses">Continue Learning</Link>
+							</Button>
+							<Button
+								size="lg"
+								variant="testPriestlyGems"
+								className="w-full"
+								asChild
+							>
+								<Link href="/courses">Continue Learning</Link>
+							</Button>
+							<Button size="lg" variant="testClay" className="w-full" asChild>
+								<Link href="/courses">Continue Learning</Link>
+							</Button>
+							<Button size="lg" variant="testSeal" className="w-full" asChild>
+								<Link href="/courses">Continue Learning</Link>
+							</Button>
+							<Button
+								size="lg"
+								variant="testLeather"
+								className="w-full"
+								asChild
+							>
+								<Link href="/courses">Continue Learning</Link>
+							</Button>
+							<Button
+								size="lg"
+								variant="testCopperPatina"
+								className="w-full"
+								asChild
+							>
+								<Link href="/courses">Continue Learning</Link>
+							</Button>
+							<Button size="lg" variant="testCopper" className="w-full" asChild>
+								<Link href="/courses">Continue Learning</Link>
+							</Button>
+						</>
 					)}
 				</div>
 			</div>

@@ -1,16 +1,17 @@
+import createNextIntlPlugin from 'next-intl/plugin'
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 	typescript: {
-		// 🚧 Temporary workaround for Next 15 route signature bug
 		ignoreBuildErrors: true,
 	},
 	images: {
 		domains: [
 			'supabase.co',
-			'lh3.googleusercontent.com', // ✅ Google profile photos
-			'avatars.githubusercontent.com', // optional (GitHub)
-			'pbs.twimg.com', // optional (Twitter)
-			'platform-lookaside.fbsbx.com', // optional (Facebook)
+			'lh3.googleusercontent.com',
+			'avatars.githubusercontent.com',
+			'pbs.twimg.com',
+			'platform-lookaside.fbsbx.com',
 		],
 		remotePatterns: [
 			{
@@ -20,26 +21,13 @@ const nextConfig = {
 				pathname: '/storage/v1/object/public/**',
 			},
 		],
-		// remotePatterns: [
-		// 	{
-		// 		protocol: 'https',
-		// 		hostname: '**.clerk.com',
-		// 	},
-		// 	{
-		// 		protocol: 'https',
-		// 		hostname: '**.clerk.dev',
-		// 	},
-		// ],
 	},
 	async headers() {
 		return [
 			{
 				source: '/api/(.*)',
 				headers: [
-					{
-						key: 'Access-Control-Allow-Origin',
-						value: '*',
-					},
+					{ key: 'Access-Control-Allow-Origin', value: '*' },
 					{
 						key: 'Access-Control-Allow-Methods',
 						value: 'GET, POST, PUT, DELETE, OPTIONS',
@@ -48,14 +36,67 @@ const nextConfig = {
 						key: 'Access-Control-Allow-Headers',
 						value: 'Content-Type, Authorization',
 					},
-					{
-						key: 'Content-Range',
-						value: 'bytes : 0-9/*',
-					},
+					{ key: 'Content-Range', value: 'bytes : 0-9/*' },
 				],
 			},
 		]
 	},
 }
 
-export default nextConfig
+// 🔗 Apply next-intl plugin *after defining your config*
+const withNextIntl = createNextIntlPlugin()
+
+export default withNextIntl(nextConfig)
+
+//TODO before next-intl plugin applied:
+// /** @type {import('next').NextConfig} */
+// const nextConfig = {
+// 	typescript: {
+// 		// 🚧 Temporary workaround for Next 15 route signature bug
+// 		ignoreBuildErrors: true,
+// 	},
+// 	images: {
+// 		domains: [
+// 			'supabase.co',
+// 			'lh3.googleusercontent.com', // ✅ Google profile photos
+// 			'avatars.githubusercontent.com', // optional (GitHub)
+// 			'pbs.twimg.com', // optional (Twitter)
+// 			'platform-lookaside.fbsbx.com', // optional (Facebook)
+// 		],
+// 		remotePatterns: [
+// 			{
+// 				protocol: 'https',
+// 				hostname: 'wsdmzszpqaxeftyebiqg.supabase.co',
+// 				port: '',
+// 				pathname: '/storage/v1/object/public/**',
+// 			},
+// 		],
+// 	},
+// 	async headers() {
+// 		return [
+// 			{
+// 				source: '/api/(.*)',
+// 				headers: [
+// 					{
+// 						key: 'Access-Control-Allow-Origin',
+// 						value: '*',
+// 					},
+// 					{
+// 						key: 'Access-Control-Allow-Methods',
+// 						value: 'GET, POST, PUT, DELETE, OPTIONS',
+// 					},
+// 					{
+// 						key: 'Access-Control-Allow-Headers',
+// 						value: 'Content-Type, Authorization',
+// 					},
+// 					{
+// 						key: 'Content-Range',
+// 						value: 'bytes : 0-9/*',
+// 					},
+// 				],
+// 			},
+// 		]
+// 	},
+// }
+
+// export default nextConfig

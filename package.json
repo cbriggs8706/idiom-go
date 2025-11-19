@@ -51,6 +51,7 @@
 		"lucide-react": "^0.344.0",
 		"next": "14.2.25",
 		"next-auth": "^4.24.11",
+		"next-intl": "^4.5.3",
 		"next-themes": "^0.2.1",
 		"postgres": "^3.4.7",
 		"ra-data-simple-rest": "^4.16.12",
