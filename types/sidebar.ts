@@ -34,6 +34,7 @@ export type SidebarTranslationKey =
 	| 'nav.numberQuiz'
 	| 'nav.lessonScripts'
 	| 'nav.spelling'
+	| 'nav.whatsThis'
 	| 'nav.music'
 	| 'nav.leaderboard'
 	| 'nav.dashboard'

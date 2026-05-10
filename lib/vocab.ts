@@ -1,3 +1,15 @@
+export type HebrewGuessKind = 'person' | 'place' | 'thing' | 'number' | 'letter'
+
+export type HebrewGuessingFacts = {
+	kind?: HebrewGuessKind
+	isProphet?: boolean
+	hasChildren?: boolean
+	wentDownToEgypt?: boolean
+	father?: string
+	books?: string[]
+	[key: string]: string | boolean | string[] | undefined
+}
+
 export type HebrewVocab = {
 	id: number | null
 	hebNiqqud: string
@@ -21,6 +33,7 @@ export type HebrewVocab = {
 	definite?: boolean
 	category?: string
 	introduction?: string
+	guessingFacts?: HebrewGuessingFacts
 }
 
 export type GreekVocab = {

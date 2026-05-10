@@ -203,6 +203,13 @@ export default function SidebarClient({
 								className="font-cardo text-xl"
 							/>
 							<SidebarItem
+								label="מה זה?"
+								href="/he/whats-this"
+								iconSrc="/gameIcons/quiz.png"
+								onClick={onItemClick}
+								className="font-cardo text-xl"
+							/>
+							<SidebarItem
 								label="שירים"
 								href="/he/music"
 								iconSrc="/icons/iconMusic.png"

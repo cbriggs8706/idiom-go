@@ -90,6 +90,7 @@ function mapRowToHebrewVocab(row: VocabEntryRow): HebrewVocab {
 		definite: row.definite ?? payload.definite ?? false,
 		category: row.category ?? payload.category ?? '',
 		introduction: row.introduction ?? payload.introduction ?? '',
+		guessingFacts: payload.guessingFacts,
 	})
 }
 

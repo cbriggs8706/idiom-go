@@ -62,6 +62,14 @@ export function VocabEntryForm({
 			<TextInput source="ipa" label="IPA" />
 			<TextInput source="dictionaryUrl" label="Dictionary URL" sx={longTextSx} />
 			<TextInput source="strongs" label="Strongs" />
+			<TextInput
+				source="guessingFactsText"
+				label="Guessing Facts (JSON)"
+				multiline
+				minRows={8}
+				sx={longTextSx}
+				helperText='Example: { "kind": "person", "hasChildren": true, "father": "אַבְרָהָם", "books": ["Numbers"] }'
+			/>
 
 			<TextInput source="partOfSpeechText" label="Part of Speech" multiline sx={longTextSx} />
 			<TextInput source="synonymsText" label="Synonyms" multiline sx={longTextSx} />

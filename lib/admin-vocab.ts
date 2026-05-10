@@ -1,4 +1,5 @@
 import { normalizeVocabStoragePath, resolveVocabMediaUrl } from '@/lib/vocab-media'
+import type { HebrewGuessingFacts } from '@/lib/vocab'
 
 export const vocabLanguageChoices = [
 	{ id: 'he', name: 'Hebrew' },
@@ -35,6 +36,36 @@ export function parseStringList(input: unknown) {
 
 export function stringifyStringList(input: unknown) {
 	return parseStringList(input).join('\n')
+}
+
+export function parseGuessingFacts(input: unknown): HebrewGuessingFacts | undefined {
+	if (!input || typeof input !== 'object' || Array.isArray(input)) return undefined
+
+	const candidate = input as Record<string, unknown>
+	const normalized: HebrewGuessingFacts = {}
+
+	for (const [key, value] of Object.entries(candidate)) {
+		if (typeof value === 'boolean' || typeof value === 'string') {
+			normalized[key] = value
+			continue
+		}
+
+		if (Array.isArray(value)) {
+			const strings = value.filter(
+				(item): item is string => typeof item === 'string' && item.trim().length > 0,
+			)
+			if (strings.length > 0) {
+				normalized[key] = strings
+			}
+		}
+	}
+
+	return Object.keys(normalized).length > 0 ? normalized : undefined
+}
+
+export function stringifyGuessingFacts(input: unknown) {
+	const guessingFacts = parseGuessingFacts(input)
+	return guessingFacts ? JSON.stringify(guessingFacts, null, 2) : ''
 }
 
 function parseLessonParts(value?: string | null) {
@@ -126,6 +157,9 @@ export function toVocabAdminRecord(
 	const lessonSort = getLessonSortValue(entry.lessons)
 	const missingImage = (entry.images ?? []).length === 0
 	const missingAudio = !hasPrimaryAudio(entry)
+	const payloadGuessingFacts = parseGuessingFacts(
+		(entry.payload as { guessingFacts?: unknown } | null | undefined)?.guessingFacts,
+	)
 
 	return {
 		...entry,
@@ -139,6 +173,7 @@ export function toVocabAdminRecord(
 		synonymsText: stringifyStringList(entry.synonyms),
 		antonymsText: stringifyStringList(entry.antonyms),
 		scripturesText: stringifyStringList(entry.scriptures),
+		guessingFactsText: stringifyGuessingFacts(payloadGuessingFacts),
 		primaryAudioUrl: resolveVocabMediaUrl(
 			entry.language === 'he'
 				? entry.hebAudio

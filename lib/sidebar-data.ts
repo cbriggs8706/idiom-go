@@ -74,6 +74,7 @@ export function buildSidebarSections({
 			{ key: 'syllables', label: localize(resolvedLocale, 'nav.syllables'), href: '/he/syllables', iconSrc: '/gameIcons/groupSort.png' },
 			{ key: 'number-quiz', label: localize(resolvedLocale, 'nav.numberQuiz'), href: '/he/number-quiz', iconSrc: '/icons/iconNumber.png' },
 			{ key: 'spelling', label: localize(resolvedLocale, 'nav.spelling'), href: '/he/spelling', iconSrc: '/icons/iconSpelling.png' },
+			{ key: 'whats-this', label: localize(resolvedLocale, 'nav.whatsThis'), href: '/he/whats-this', iconSrc: '/gameIcons/quiz.png' },
 			{ key: 'verbs', label: localize(resolvedLocale, 'nav.verbs'), href: '/he/verbs', iconSrc: '/icons/iconRunning.png' },
 			{ key: 'scramble', label: localize(resolvedLocale, 'nav.scramble'), href: '/he/scramble', iconSrc: '/icons/iconScrambled.png' },
 			{ key: 'sentence-builder', label: localize(resolvedLocale, 'nav.sentenceBuilder'), href: '/he/sentence-builder', iconSrc: '/icons/iconBuilding.png' },

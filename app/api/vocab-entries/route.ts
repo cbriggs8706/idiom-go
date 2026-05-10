@@ -6,6 +6,7 @@ import { isAdmin } from '@/lib/admin'
 import {
 	getLessonSortValue,
 	normalizeMediaList,
+	parseGuessingFacts,
 	parseStringList,
 	toVocabAdminRecord,
 } from '@/lib/admin-vocab'
@@ -27,6 +28,19 @@ function normalizeBoolean(value: unknown) {
 	return value === true || value === 'true' || value === 1 || value === '1'
 }
 
+function parseGuessingFactsText(input: unknown) {
+	if (typeof input !== 'string' || !input.trim()) return undefined
+	return parseGuessingFacts(JSON.parse(input))
+}
+
+function getExistingPayload(body: Record<string, unknown>) {
+	if (!body.payload || typeof body.payload !== 'object' || Array.isArray(body.payload)) {
+		return {}
+	}
+
+	return body.payload as Record<string, unknown>
+}
+
 function normalizeRecord(body: Record<string, unknown>) {
 	const language = normalizeNullableString(body.language) ?? 'he'
 	const images = normalizeMediaList(body.imagesText ?? body.images)
@@ -38,6 +52,10 @@ function normalizeRecord(body: Record<string, unknown>) {
 	const hebAudio = normalizeNullableString(body.hebAudio)
 	const engAudio = normalizeNullableString(body.engAudio)
 	const grkAudio = normalizeNullableString(body.grkAudio)
+	const guessingFacts =
+		parseGuessingFactsText(body.guessingFactsText) ??
+		parseGuessingFacts(body.guessingFacts)
+	const existingPayload = getExistingPayload(body)
 
 	const row = {
 		sourceKey: normalizeNullableString(body.sourceKey) ?? 'awb',
@@ -79,7 +97,11 @@ function normalizeRecord(body: Record<string, unknown>) {
 
 	return {
 		...row,
-		payload: row,
+		payload: {
+			...existingPayload,
+			...row,
+			guessingFacts,
+		},
 		updatedAt: new Date(),
 	}
 }
@@ -251,7 +273,13 @@ export const POST = async (req: Request) => {
 	}
 
 	const body = (await req.json()) as Record<string, unknown>
-	const normalized = normalizeRecord(body)
+	let normalized: ReturnType<typeof normalizeRecord>
+
+	try {
+		normalized = normalizeRecord(body)
+	} catch {
+		return new NextResponse('Invalid guessing facts JSON.', { status: 400 })
+	}
 	const validationError = await validateConstructAbsoluteLink(normalized)
 	if (validationError) {
 		return new NextResponse(validationError, { status: 400 })
