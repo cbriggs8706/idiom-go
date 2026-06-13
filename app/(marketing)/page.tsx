@@ -18,7 +18,7 @@ export default function Home() {
 
 	return (
 		<div className="max-w-[988px] mx-auto flex-1 w-full flex flex-col lg:flex-row items-center justify-center p-4 gap-2">
-			<div className="relative w-[180px] h-[180px] lg:w-[424px] lg:h-[424px] mb-8 lg:mb-0">
+			{/* <div className="relative w-[180px] h-[180px] lg:w-[424px] lg:h-[424px] mb-8 lg:mb-0">
 				<Image
 					src="/icons/heroKids.png"
 					fill
@@ -26,7 +26,7 @@ export default function Home() {
 					sizes="(min-width: 1024px) 424px, 180px"
 					loading="eager"
 				/>
-			</div>
+			</div> */}
 
 			<div className="flex flex-col items-center gap-y-8">
 				<h1 className="text-xl lg:text-3xl font-bold text-neutral-600 max-w-[480px] text-center">
@@ -34,31 +34,14 @@ export default function Home() {
 					makes up over half of everyday speech. IdiomGo uses comprehensible
 					input and engaging activities to help you hear, speak, read, and write
 					naturally—so you can confidently &apos;go&apos; with the language. */}
-					Shalom! Welcome to Torah Lev, where we make learning Biblical Hebrew
-					fun and effective with comprehensible input. Click the button below to
-					create an account to keep track of your progress or continue as a
-					guest.
+					Shalom! We&apos;ve moved. IdiomGo is now <strong>TorahLev.com</strong>{' '}
+					Make sure to bookmark it once you get there!
 				</h1>
 
 				<div className="flex flex-col items-center gap-y-3 max-w-[330px] w-full">
-					{isLoading ? (
-						<Loader className="h-5 w-5 text-muted-foreground animate-spin" />
-					) : !isSignedIn ? (
-						<>
-							<Button
-								size="lg"
-								variant="secondary"
-								className="w-full"
-								onClick={() => signIn(undefined, { callbackUrl: '/courses' })}
-							>
-								Start Learning{' '}
-							</Button>
-						</>
-					) : (
-						<Button size="lg" variant="secondary" className="w-full" asChild>
-							<Link href="/courses">Continue Learning</Link>
-						</Button>
-					)}
+					<Button size="lg" variant="secondary" className="w-full" asChild>
+						<Link href="https://torahlev.com/">Go to TorahLev.com</Link>
+					</Button>
 				</div>
 			</div>
 		</div>
